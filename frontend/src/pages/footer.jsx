@@ -9,37 +9,37 @@ export default function Footer() {
         {/* Quick Links */}
         <div>
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-            <span role="img" aria-label="links">🔗</span> Quick Links
+            <span role="img" aria-label="links"></span> Quick Links
           </h3>
           <ul className="space-y-2  text-[#3B7046] ">
-            <li><a href="/contact" className="hover:text-[#2d5c37] flex items-center gap-2">📞 Contact Us</a></li>
-            <li><a href="/account" className="hover:text-[#2d5c37] flex items-center gap-2">🛍️ My Account</a></li>
-            <li><a href="/terms" className="hover:text-[#2d5c37] flex items-center gap-2">📜 Terms & Conditions</a></li>
-            <li><a href="/privacy" className="hover:text-[#2d5c37] flex items-center gap-2">🔒 Privacy Policy</a></li>
+            <li><a href="/contact" className="hover:text-[#2d5c37] flex items-center gap-2"> Contact Us</a></li>
+            <li><a href="/account" className="hover:text-[#2d5c37] flex items-center gap-2"> My Account</a></li>
+            <li><a href="/terms" className="hover:text-[#2d5c37] flex items-center gap-2"> Terms & Conditions</a></li>
+            <li><a href="/privacy" className="hover:text-[#2d5c37] flex items-center gap-2"> Privacy Policy</a></li>
           </ul>
         </div>
 
         {/* Contact Us */}
         <div>
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-            <span role="img" aria-label="mail">📬</span> Contact Us
+            <span role="img" aria-label="mail"></span> Contact Us
           </h3>
           <ul className="space-y-2 text-[#3B7046]">
-            <li>📍 Address: Tehzeeb Creations, Lucknow, India</li>
+            <li> Address: Tehzeeb Creations, Lucknow, India</li>
             <li>
-              📧 Email: <a href="mailto:support@tehzeebcreations.com" className="hover:text-[#2d5c37] underline">support@tehzeebcreations.com</a>
+               Email: <a href="mailto:support@tehzeebcreations.com" className="hover:text-[#2d5c37] underline">support@tehzeebcreations.com</a>
             </li>
             <li>
-              📞 Phone: <a href="tel:+919XXXXXXXXX" className="hover:text-[#2d5c37] underline">+91 9XXXXXXXXX</a>
+              Phone: <a href="tel:+919XXXXXXXXX" className="hover:text-[#2d5c37] underline">+91 9XXXXXXXXX</a>
             </li>
-            <li>🕓 Working Hours: Mon – Sat | 10:00 AM – 7:00 PM</li>
+            <li> Working Hours: Mon – Sat | 10:00 AM – 7:00 PM</li>
           </ul>
         </div>
 
         {/* Social / Follow Us */}
         <div >
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-black">
-            <span role="img" aria-label="earth">🌐</span> Follow Us
+            <span role="img" aria-label="earth"></span> Follow Us
           </h3>
           <p className="text-[#3B7046] mb-3">
             Stay connected and get inspired by our latest designs & styling ideas:
@@ -69,7 +69,7 @@ export default function Footer() {
         {/* Disclaimer */}
         <div>
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-            <span role="img" aria-label="warning">⚠️</span> Disclaimer
+            <span role="img" aria-label="warning"></span> Disclaimer
           </h3>
           <p className="text-[#3B7046] text-sm mb-4">
             All products and designs showcased on Tehzeeb Creations are created with utmost care and originality. <br />

@@ -20,7 +20,7 @@ const menu = [
   { name: "About Us", href: "/about" },
   { name: "Shop", href: "/shop" },
   { name: "Blog", href: "/Blog" },
-  { name: "Contact", href: "/contact" },
+//   { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
