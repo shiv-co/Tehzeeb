@@ -53,13 +53,13 @@ export default function Navbar() {
           {/* Desktop menu */}
           <div className="hidden md:flex space-x-8 items-center">
             {menu.map((item) => (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className="text-[#3B7046] hover:text-[#2d5c37] font-medium text-lg transition-colors"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -70,8 +70,7 @@ export default function Navbar() {
             </button>
             <button className="text-[#3B7046] hover:text-[#2d5c37]   transition-colors">
               <Link to={"/cart"}>
-                {" "}
-                <FiShoppingBag size={22} />{" "}
+                <FiShoppingBag size={22} />
               </Link>
             </button>
             {/* Profile Icon */}
@@ -99,18 +98,18 @@ export default function Navbar() {
                           Please log in to access your account.
                         </div>
                       </div>
-                      <a
-                        href="/login"
+                      <Link
+                        to="/login"
                         className="w-full py-2 mb-2 rounded-lg bg-[#3B7046] text-white text-center font-semibold hover:bg-[#63B17B] transition"
                       >
                         Login
-                      </a>
-                      <a
-                        href="/signup"
+                      </Link>
+                      <Link
+                        to="/signup"
                         className="w-full py-2 rounded-lg border-2 border-[#3B7046] text-[#3B7046] text-center font-semibold hover:bg-[#FDD7D7] transition"
                       >
                         Sign Up
-                      </a>
+                      </Link>
                     </>
                   ) : (
                     <>
@@ -130,9 +129,8 @@ export default function Navbar() {
                           </div>
                         </div>
                       </div>
-                     
                       <Link
-                        to={"/profile"}
+                        to="/profile"
                         className="w-full py-2 rounded-lg border-2 border-[#3B7046] text-[#3B7046] text-center font-semibold mb-2 hover:bg-[#FDD7D7] transition"
                       >
                         Edit Profile
@@ -166,14 +164,14 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden bg-[#FDD7D7] px-4 pt-4 pb-2 space-y-3">
           {menu.map((item) => (
-            <a
+            <Link
               key={item.name}
-              href={item.href}
+              to={item.href}
               className="block text-[#3B7046] hover:text-[#F9A9AC] py-1 text-lg font-medium"
               onClick={() => setOpen(false)}
             >
               {item.name}
-            </a>
+            </Link>
           ))}
         </div>
       )}
