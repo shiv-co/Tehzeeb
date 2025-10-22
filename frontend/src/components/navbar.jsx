@@ -11,7 +11,7 @@ import logo from "/icons/Logo1.png";
 import { Link } from "react-router-dom";
 
 const mockUser = {
-  isLoggedIn: true, // Set to false to test the not-logged-in state
+  isLoggedIn: false, // Set to false to test the not-logged-in state
   name: "Ananya Singh",
 };
 
