@@ -117,7 +117,8 @@ export default function SignUpPage() {
         {/* Login link */}
         <div className="text-center text-[#3B7046]">
           Already have an account?{" "}
-          <a href="/login" className="font-semibold text-[#F9A9AC] hover:underline">Login</a>
+         
+          <Link to={"/login"} className="font-semibold text-[#F9A9AC] hover:underline">Login</Link>
         </div>
       </div>
     </div>
