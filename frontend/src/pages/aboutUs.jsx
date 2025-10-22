@@ -2,7 +2,7 @@ import React from "react";
 
 export default function AboutUs() {
   return (
-    <div className="min-h-screen bg-[#FDD7D7] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen   shadow-2xl shadow-[#3B7046] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl p-8 md:p-16 relative overflow-hidden">
         {/* Subtle background floral element */}
         <div className="absolute -top-20 -right-20 opacity-10 select-none" aria-hidden>

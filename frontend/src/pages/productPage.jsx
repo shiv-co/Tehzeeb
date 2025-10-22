@@ -84,7 +84,7 @@ const btnColors = {
 
 export default function ProductsPage() {
   return (
-    <div className="min-h-screen bg-[#ffffff] py-8 px-2 md:px-8">
+    <div className="min-h-screen bg-[#ffffff]  py-8 px-2 md:px-8">
       <h1 className="text-3xl md:text-4xl font-extrabold text-center text-[#3B7046] mb-10">
         Shop Our Collection
       </h1>

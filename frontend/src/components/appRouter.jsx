@@ -9,6 +9,9 @@ import ProductPreview from "../pages/productPreview";
 import LoginPage from "../auth/login";
 import SignUpPage from "../auth/signUp";
 import AboutUs from "../pages/aboutUs";
+import Footer from "../pages/footer";
+import CartPage from "../pages/cart";
+import ProfileEditPage from "../pages/profileEdit";
 
 // Optional: Add a NotFound component for unmatched routes
 function NotFound() {
@@ -27,9 +30,12 @@ export default function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ProductsPage />} />
         <Route path="/product/:id" element={<ProductPreview />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/profile" element={<ProfileEditPage />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/footer" element={<Footer />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

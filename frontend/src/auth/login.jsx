@@ -6,8 +6,8 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FDD7D7] px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-8 flex flex-col gap-6">
+    <div className="min-h-screen flex items-center justify-center  px-4">
+      <div className="w-full max-w-md bg-white rounded-xl  p-8 flex flex-col gap-6  shadow-2xl shadow-[#3B7046]">
         {/* Logo/Brand */}
         <div className="flex flex-col items-center gap-2">
           <div className="text-3xl font-bold text-[#3B7046] tracking-widest">TEHZEEB</div>

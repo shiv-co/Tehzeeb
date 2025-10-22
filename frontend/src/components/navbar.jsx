@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import { FiSearch, FiShoppingBag, FiMenu, FiX,  FiLogOut, FiUser  } from "react-icons/fi";
-    import logo from "/icons/Logo1.png"
-
+import {
+  FiSearch,
+  FiShoppingBag,
+  FiMenu,
+  FiX,
+  FiLogOut,
+  FiUser,
+} from "react-icons/fi";
+import logo from "/icons/Logo1.png";
+import { Link } from "react-router-dom";
 
 const mockUser = {
-  isLoggedIn: false, // Set to false to test the not-logged-in state
+  isLoggedIn: true, // Set to false to test the not-logged-in state
   name: "Ananya Singh",
 };
 
@@ -28,8 +35,12 @@ export default function Navbar() {
         <div className="flex justify-between h-full items-center">
           {/* Brand */}
           <div className="flex justify-center items-center ">
-          <img src={logo} alt="Tehzeeb Creations Logo" className="h-20 w-84" />
-          {/* <a
+            <img
+              src={logo}
+              alt="Tehzeeb Creations Logo"
+              className="h-20 w-84"
+            />
+            {/* <a
             href="/"
             className="font-bold text-sm tracking-widest"
             style={{ color: "#FDD7D7", letterSpacing: "0.1em" }}
@@ -57,10 +68,13 @@ export default function Navbar() {
             <button className="text-[#3B7046] hover:text-[#2d5c37]  transition-colors">
               <FiSearch size={22} />
             </button>
-            <button className="text-[#3B7046] hover:text-[#2d5c37]  transition-colors">
-              <FiShoppingBag size={22} />
+            <button className="text-[#3B7046] hover:text-[#2d5c37]   transition-colors">
+              <Link to={"/cart"}>
+                {" "}
+                <FiShoppingBag size={22} />{" "}
+              </Link>
             </button>
-              {/* Profile Icon */}
+            {/* Profile Icon */}
             <div className="relative">
               <button
                 className="text-[#3B7046] focus:outline-none"
@@ -108,16 +122,21 @@ export default function Navbar() {
                             .join("")}
                         </div>
                         <div>
-                          <div className="font-bold text-[#3B7046] text-lg">{user.name}</div>
-                          <div className="text-xs text-[#63B17B]">Welcome back!</div>
+                          <div className="font-bold text-[#3B7046] text-lg">
+                            {user.name}
+                          </div>
+                          <div className="text-xs text-[#63B17B]">
+                            Welcome back!
+                          </div>
                         </div>
                       </div>
-                      <a
-                        href="/profile"
+                     
+                      <Link
+                        to={"/profile"}
                         className="w-full py-2 rounded-lg border-2 border-[#3B7046] text-[#3B7046] text-center font-semibold mb-2 hover:bg-[#FDD7D7] transition"
                       >
                         Edit Profile
-                      </a>
+                      </Link>
                       <button
                         className="w-full py-2 rounded-lg bg-[#F9A9AC] text-[#3B7046] font-semibold hover:bg-[#63B17B] hover:text-white transition"
                         onClick={() => {
@@ -158,7 +177,7 @@ export default function Navbar() {
           ))}
         </div>
       )}
-         {/* Click outside to close profile card */}
+      {/* Click outside to close profile card */}
       {profileOpen && (
         <div
           className="fixed inset-0 z-40"
