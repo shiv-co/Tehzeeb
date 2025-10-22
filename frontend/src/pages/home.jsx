@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 // Replace with your actual image
 import backgroundImage from "../assets/images/product.jpg"; // e.g., /images/your-models-image.png
 
@@ -32,12 +32,10 @@ export default function HomePage() {
             LATEST COLLECTION
           </span>
         </p>
-        <a
-          href="/shop"
-          className="mt-8 px-8 py-3 bg-[#63B17B] text-white font-bold text-lg rounded shadow hover:bg-[#F9A9AC] hover:text-[#3B7046] transition-all"
-        >
-          SHOP NOW
-        </a>
+        
+        <Link to={"/shop"} className="mt-8 px-8 py-3 bg-[#63B17B] text-white font-bold text-lg rounded shadow hover:bg-[#F9A9AC] hover:text-[#3B7046] transition-all" > 
+        SHOP NOW
+        </Link>
       </div>
 
       {/* WhatsApp Icon */}
