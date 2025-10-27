@@ -3,6 +3,7 @@ import './App.css'
 import AppRouter from './components/appRouter'
 import ProductsPage from './pages/productPage'
 import Footer from './pages/footer'
+import ProductPreview from './pages/productPreview'
 
 function App() {
 
@@ -10,6 +11,7 @@ function App() {
   return (
     <>
     < AppRouter />
+    
     <Footer />
   
     </>

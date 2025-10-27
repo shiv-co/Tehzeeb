@@ -1,44 +1,44 @@
 import React from "react";
-import Antima1 from "../assets/product_Images/Antima_product1.jpg"
-import Antima2 from "../assets/product_Images/Antima_product2.jpg"
+// 1. IMPORT useSelector, useDispatch
+import { useSelector, useDispatch } from "react-redux";
+// 2. IMPORT the new 'removeFromCart' action
+import { removeFromCart } from "../redux/cartSlice"; // <-- Check this path!
 
-// Example cart data, replace with your real cart state or context
-const cartItems = [
-  {
-    id: 1,
-    name: "Aadhira Polki Pearl Necklace Set",
-    image: Antima1,
-    price: 6649,
-    quantity: 1,
-    color: "Brown",
-    size: "M",
-  },
-  {
-    id: 2,
-    name: "Classic Tennis Necklace Set",
-    image: Antima2,
-    price: 4150,
-    quantity: 2,
-    color: "Magenta Pink",
-    size: "S",
-  },
-];
-
+// Color Theme
+const COLORS = {
+  primary: "#B3541E",      // Terracotta
+  secondary: "#D6A74F",    // Mustard Gold
+  accent: "#A5A58D",       // Sage Green
+  text: "#3E2F1C",         // Deep Brown
+  background: "#F5EBDD",   // Linen / Sand
+};
 export default function CartPage() {
+  // 3. GET dispatch function
+  const dispatch = useDispatch();
+  
+  // Get cart items from Redux store
+  const { cartItems } = useSelector((state) => state.cart);
+
+  // Calculate total
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
+  // 4. CREATE handler function
+  const handleRemove = (id) => {
+    dispatch(removeFromCart(id)); // Dispatch the action with the item's id
+  };
+
   return (
-    <div className="min-h-screen flex  shadow-2xl shadow-[#3B7046] flex-col items-center py-8 px-2">
+    <div className="min-h-screen flex shadow-2xl shadow-[#D6A74F]/40 flex-col items-center py-8 px-2 bg-[#F5EBDD]">
       <div className="w-full max-w-3xl bg-white rounded-xl shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-[#3B7046] mb-8 text-center">
+        <h1 className="text-3xl font-bold text-[#B3541E] mb-8 text-center">
           My Cart
         </h1>
 
         {cartItems.length === 0 ? (
-          <div className="text-center text-[#3B7046] text-lg">
+          <div className="text-center text-[#3E2F1C] text-lg">
             Your cart is empty.
           </div>
         ) : (
@@ -49,27 +49,31 @@ export default function CartPage() {
                   key={item.id}
                   className="flex flex-col md:flex-row items-center gap-4 border-b pb-4"
                 >
+                  {/* THIS WILL WORK NOW because 'item.image' exists */}
                   <img
                     src={item.image}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded-md shadow"
                   />
                   <div className="flex-1 flex flex-col items-start">
-                    <div className="font-bold text-[#3B7046] text-lg mb-1">{item.name}</div>
-                    <div className="flex gap-4 text-sm text-[#63B17B] mb-2">
-                      <span>Color: <span className="font-semibold">{item.color}</span></span>
-                      <span>Size: <span className="font-semibold">{item.size}</span></span>
+                    {/* THIS WILL WORK NOW because 'item.name' exists */}
+                    <div className="font-bold text-[#3E2F1C] text-lg mb-1">
+                      {item.name}
                     </div>
+                    {/* (Add color/size later if you need them) */}
                     <div className="flex items-center gap-3">
-                      <span className="text-[#3B7046] font-semibold">₹ {item.price.toLocaleString()}</span>
-                      <span className="mx-2 text-[#F9A9AC]">×</span>
-                      <span className="text-[#3B7046]">{item.quantity}</span>
+                      <span className="text-[#B3541E] font-semibold">
+                        ₹ {item.price.toLocaleString()}
+                      </span>
+                      <span className="mx-2 text-[#A5A58D]">×</span>
+                      <span className="text-[#3E2F1C]">{item.quantity}</span>
                     </div>
                   </div>
-                  {/* Remove/Quantity Controls (optional) */}
+                  
+                  {/* 5. ADD the onClick to the button */}
                   <button
-                    className="text-[#F9A9AC] font-semibold hover:text-[#FF5C5C] transition"
-                    // onClick={() => handleRemove(item.id)}
+                    onClick={() => handleRemove(item.id)}
+                    className="text-[#D6A74F] font-semibold hover:text-[#B3541E] transition"
                   >
                     Remove
                   </button>
@@ -78,19 +82,19 @@ export default function CartPage() {
             </div>
 
             {/* Cart Summary */}
-            <div className="mt-8 flex flex-col md:flex-col items-center justify-between gap-6">
-              <div className="text-xl font-bold text-[#3B7046]">
+            <div className="mt-8 flex flex-col items-center justify-between gap-6">
+              <div className="text-xl font-bold text-[#B3541E]">
                 Total: ₹ {total.toLocaleString()}
               </div>
               <a
                 href="/checkout"
-                className="px-8 py-3 rounded-lg text-lg bg-[#3B7046] text-white font-bold hover:bg-[#63B17B] transition shadow"
+                className="px-8 py-3 rounded-lg text-lg bg-[#B3541E] text-white font-bold hover:bg-[#D6A74F] transition shadow"
               >
                 Proceed to Checkout
               </a>
-               <a
+              <a
                 href="/shop"
-                className="px-8 py-3 rounded-lg bg-[#3B7046] text-white font-bold hover:bg-[#63B17B] transition shadow"
+                className="px-8 py-3 rounded-lg bg-[#B3541E] text-white font-bold hover:bg-[#D6A74F] transition shadow"
               >
                 Continue to Shopping
               </a>

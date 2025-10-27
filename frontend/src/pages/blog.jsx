@@ -52,21 +52,22 @@ const sideBlogs = [
 
 export default function BlogPage() {
   return (
-    <div className="bg-[#F5F5F7] min-h-screen py-8 px-2">
+    <div className="bg-[#F5EBDD] min-h-screen py-8 px-2">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Main Featured Blog */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-[#A5A58D]">
             <img
               src={mainBlog.image}
               alt={mainBlog.title}
               className="w-full h-96 object-cover"
+              style={{ background: "#A5A58D" }}
             />
             <div className="p-8">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-[#232323] mb-4">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-[#3E2F1C] mb-4">
                 {mainBlog.title}
               </h1>
-              <p className="text-lg text-[#555] mb-6">{mainBlog.description}</p>
+              <p className="text-lg text-[#3E2F1C] mb-6">{mainBlog.description}</p>
               <div className="flex items-center gap-3 flex-wrap">
                 {/* Author Avatar & Info */}
                 <div className="flex items-center gap-2">
@@ -75,10 +76,10 @@ export default function BlogPage() {
                     alt={mainBlog.author.name}
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  <span className="font-semibold text-[#232323]">
+                  <span className="font-semibold text-[#3E2F1C]">
                     {mainBlog.author.name}
                   </span>
-                  <span className="text-[#888] text-sm">
+                  <span className="text-[#A5A58D] text-sm">
                     {mainBlog.author.role}
                   </span>
                 </div>
@@ -86,13 +87,13 @@ export default function BlogPage() {
                 {mainBlog.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-[#f3e0e0] text-[#C65151] px-3 py-1 rounded-full text-xs font-semibold ml-2"
+                    className="bg-[#A5A58D] text-[#B3541E] px-3 py-1 rounded-full text-xs font-semibold ml-2"
                   >
                     {tag}
                   </span>
                 ))}
                 {/* Date & Read Time */}
-                <span className="text-[#888] text-sm ml-4">
+                <span className="text-[#A5A58D] text-sm ml-4">
                   {mainBlog.date} &bull; {mainBlog.readTime}
                 </span>
               </div>
@@ -101,29 +102,30 @@ export default function BlogPage() {
         </div>
         {/* Trending & Side Blogs */}
         <aside className="space-y-4">
-          <div className="rounded-2xl bg-gradient-to-br from-[#3B7046] to-[#227533] p-6 mb-3 text-white font-bold text-xl flex items-center justify-center min-h-[90px]">
+          <div className="rounded-2xl bg-gradient-to-br from-[#B3541E] to-[#D6A74F] p-6 mb-3 text-white font-bold text-xl flex items-center justify-center min-h-[90px]">
             {trending.title}
           </div>
           {sideBlogs.map((blog) => (
             <div
               key={blog.id}
-              className="flex gap-4 items-center bg-white rounded-2xl shadow p-3 hover:shadow-lg transition"
+              className="flex gap-4 items-center bg-white rounded-2xl shadow p-3 hover:shadow-lg transition border border-[#A5A58D]"
             >
               <img
                 src={blog.image}
                 alt={blog.title}
-                className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                className="w-20 h-20 rounded-lg object-cover flex-shrink-0 bg-[#A5A58D]"
+                
               />
               <div className="flex-1">
-                <div className="font-semibold text-md text-[#232323] leading-tight line-clamp-2">
+                <div className="font-semibold text-md text-[#3E2F1C] leading-tight line-clamp-2">
                   {blog.title}
                 </div>
-                <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-[#888]">
+                <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-[#A5A58D]">
                   <span>{blog.date}</span>
                   <span>&bull;</span>
                   <span>{blog.readTime}</span>
                   <span
-                    className="bg-[#f3e0e0] text-[#C65151] px-2 py-1 rounded-full font-medium"
+                    className="bg-[#D6A74F] text-[#3E2F1C] px-2 py-1 rounded-full font-medium"
                   >
                     {blog.tag}
                   </span>

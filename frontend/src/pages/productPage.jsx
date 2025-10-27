@@ -1,151 +1,150 @@
-import React from "react";
-import Antima1 from "../assets/product_Images/Antima_product1.jpg"
-import Antima2 from "../assets/product_Images/Antima_product2.jpg"
-import Garima1 from "../assets/product_Images/Garima_product1.jpg"
-import Garima2 from "../assets/product_Images/Garima_product2.jpg"
+// import React, { useState, useEffect } from 'react';
+// import { useSelector } from 'react-redux';
+// import ProductCard from '../pages/productCard.jsx';
+// import { useNavigate } from 'react-router-dom';
 
-// Sample product data (replace with API data as needed)
-const products = [
-  {
-    id: 1,
-    title: "Antique Gold Three Layer Kanauti",
-    image: Antima1,
-    price: 1750,
-    originalPrice: 2099,
-    status: "soldout",
-  },
-  {
-    id: 2,
-    title: "Baghira Pearl Drop Earrings",
-    image: Garima1,
-    price: 900,
-    originalPrice: 1000,
-    status: "soldout",
-  },
-  {
-    id: 3,
-    title: "Aadhira Polki Pearl Necklace Set",
-    image: Antima2,
-    price: 6649,
-    originalPrice: 8400,
-    status: "sale",
-  },
-  {
-    id: 4,
-    title: "Classic Tennis Necklace Set",
-    image: Garima2,
-    price: 4150,
-    originalPrice: 4800,
-    status: "sale",
-  },
-  {
-    id: 5,
-    title: "Leher Kanauti with Ear Cuffs",
-    image: Antima1,
-    price: 1850,
-    originalPrice: 2100,
-    status: "sale",
-  },
-  {
-    id: 6,
-    title: "White Maurya Ear Cuff Jhumka",
-    image: Antima2,
-    price: 2150,
-    originalPrice: 2500,
-    status: "sale",
-  },
-  {
-    id: 7,
-    title: "Ruhi White Pearl Earrings",
-    image: Garima2,
-    price: 1350,
-    originalPrice: null,
-    status: "sale",
-  },
-  {
-    id: 8,
-    title: "Ruby Square Cut Necklace Set",
-    image: Garima1,
-    price: 3250,
-    originalPrice: 3600,
-    status: "soldout",
-  },
-];
+// const COLORS = {
+//   primary: '#B3541E',
+//   secondary: '#D6A74F',
+//   accent: '#A5A58D',
+//   text: '#3E2F1C',
+//   background: '#F5EBDD',
+// };
 
-const statusColors = {
-  sale: "bg-[#3B7046] text-white",
-  soldout: "bg-[#D6B3D6] text-[#3B7046]", // Using a soft pink for "sold out"
-};
+// export default function ProductsPage() {
+//   const products = useSelector((state) => state.products.items);
+//   const navigate = useNavigate();
+//   const [isMounted, setIsMounted] = useState(false); // <-- 1. For fade-in
 
-const btnColors = {
-  sale: "border-[#3B7046] text-[#3B7046] hover:bg-[#3B7046] hover:text-white",
-  soldout: "border-[#F9A9AC] text-[#F9A9AC] cursor-not-allowed",
+//   // 2. Trigger fade-in animation on mount
+//   useEffect(() => {
+//     setIsMounted(true);
+//   }, []);
+
+//   return (
+//     <div
+//       className="min-h-screen py-8 px-2 md:px-8"
+//       style={{ background: COLORS.background }}
+//     >
+//       <h1
+//         className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-tight"
+//         style={{ color: COLORS.primary }}
+//       >
+//         Shop Our Collection
+//       </h1>
+//       {/* 3. Apply animation styles to the grid */}
+//       <div
+//         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-10 gap-y-12 place-items-center mx-10"
+//         style={{
+//           opacity: isMounted ? 1 : 0,
+//           transform: isMounted ? 'translateY(0)' : 'translateY(20px)',
+//           transition: 'opacity 0.7s ease-out, transform 0.7s ease-out',
+//         }}
+//       >
+//         {products.map((product) => (
+//           <div
+//             key={product.id}
+//             onClick={() => navigate(`/products/${product.id}`)}
+//             style={{ cursor: 'pointer', width: '100%' }}
+//           >
+//             <ProductCard product={product} />
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ProductCard from "../pages/productCard.jsx";
+import { fetchProducts } from "../redux/productsSlice.js"; // <-- 1. IMPORT THUNK
+
+const COLORS = {
+  primary: "#B3541E",
+  secondary: "#D6A74F",
+  accent: "#A5A58D",
+  text: "#3E2F1C",
+  background: "#F5EBDD",
 };
 
 export default function ProductsPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [show, setShow] = useState(false);
+
+  // 2. GET DATA FROM REDUX STORE
+  const {
+    items: products,
+    loading,
+    error,
+  } = useSelector((state) => state.products);
+
+  // 3. FETCH PRODUCTS ON PAGE LOAD
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  // For fade-in effect
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 4. HANDLE LOADING AND ERROR STATES
+  if (loading === "pending") {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: COLORS.background }}
+      >
+        <div className="text-2xl font-semibold" style={{ color: COLORS.primary }}>
+          Loading Our Collection...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: COLORS.background }}
+      >
+        <div className="text-2xl font-semibold" style={{ color: "red" }}>
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#ffffff]  py-8 px-2 md:px-8">
-      <h1 className="text-3xl md:text-4xl font-extrabold text-center text-[#3B7046] mb-10">
+    <div
+      className="min-h-screen py-8 px-2 md:px-8 transition-opacity duration-1000"
+      style={{ background: COLORS.background, opacity: show ? 1 : 0 }}
+    >
+      <h1
+        className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-tight"
+        style={{ color: COLORS.primary }}
+      >
         Shop Our Collection
       </h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  lg:gap-12 gap-4 md:pl-20 lg:pr-20 ">
+      {/* 5. MAP OVER REAL PRODUCTS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-10 gap-y-12 place-items-center mx-10">
         {products.map((product) => (
           <div
-            key={product.id}
-            className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col overflow-hidden"
+            key={product._id} // <-- Use _id from MongoDB
+            onClick={() => navigate(`/products/${product._id}`)} // <-- Use _id
+            style={{ cursor: "pointer", width: "100%" }}
           >
-            <div className="relative">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-60 lg:h-full object-cover"
-              />
-              <span
-                className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold ${
-                  product.status === "soldout"
-                    ? "bg-[#D6B3D6] text-[#3B7046]"
-                    : "bg-[#3B7046] text-white"
-                }`}
-              >
-                {product.status === "sale" ? "Sale" : "Sold out"}
-              </span>
-            </div>
-            <div className="p-2  flex flex-col flex-grow">
-              <h2 className="font-semibold text-[#3B7046] text-lg mb-2">
-                {product.title}
-              </h2>
-              <div className="mb-2">
-                {product.originalPrice && product.originalPrice > product.price ? (
-                  <>
-                    <span className="line-through text-[#9CA3AF] mr-2">
-                      ₹ {product.originalPrice.toLocaleString()}
-                    </span>
-                    <span className="font-bold text-[#3B7046] text-lg">
-                      ₹ {product.price.toLocaleString()}
-                    </span>
-                  </>
-                ) : (
-                  <span className="font-bold text-[#3B7046] text-lg">
-                    ₹ {product.price.toLocaleString()}
-                  </span>
-                )}
-              </div>
-              <button
-                disabled={product.status === "soldout"}
-                className={`mt-auto w-full px-4 py-2 border-2 rounded-lg font-semibold transition 
-                  ${
-                    product.status === "soldout"
-                      ? "border-[#F9A9AC] text-[#F9A9AC] bg-[#F9A9AC]/10 cursor-not-allowed"
-                      : "border-[#3B7046] text-[#3B7046] bg-[#FDD7D7] hover:bg-[#3B7046] hover:text-white"
-                  }
-                `}
-              >
-                {product.status === "soldout" ? "Sold out" : "Add to cart"}
-              </button>
-            </div>
+            <ProductCard product={product} />
           </div>
         ))}
       </div>
     </div>
   );
 }
+
