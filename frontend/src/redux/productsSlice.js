@@ -242,8 +242,9 @@ export const fetchProducts = createAsyncThunk(
       // Fetches all products
       const { data } = await axios.get(
         // 'http://localhost:5000/api/products'
-        "https://tehzeeb-m4q8-56e7orjus-shivam-singhs-projects-e9ef9bb8.vercel.app/api/products"
-      );
+        "https://tehzeeb-m4q8-56e7orjus-shivam-singhs-projects-e9ef9bb8.vercel.app/api/products",{
+        withCredentials: true,
+    });
       return data;
     } catch (error) {
       // Handle errors

@@ -90,7 +90,8 @@ app.use(cors({
     "https://tehzeeb.vercel.app"  // 🔥 removed trailing slash
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+ allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
 }));
 
 // Middleware to parse JSON and form data
