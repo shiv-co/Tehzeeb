@@ -22,11 +22,9 @@ connectDB();
 
 const app = express();
 app.use(cors({
-   origin: [
-      "https://tehzeeb.vercel.app/", // ✅ your frontend domain
-      "http://localhost:5173" // ✅ for local development (Vite) or 3000 for CRA
-    ],
-    credentials: true,
+    origin: ["http://localhost:3000", "https://tehzeeb.vercel.app/"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
 
 // Body parser middleware
