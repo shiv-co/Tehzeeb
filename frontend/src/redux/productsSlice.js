@@ -260,7 +260,8 @@ export const fetchProductById = createAsyncThunk(
     try {
       // Fetches a single product by its ID
       const { data } = await axios.get(
-        `http://localhost:5000/api/products/${productId}`
+        // `http://localhost:5000/api/products/${productId}`,
+        
       );
       return data;
     } catch (error) {
