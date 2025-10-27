@@ -21,7 +21,13 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+   origin: [
+      "https://tehzeeb.vercel.app/", // ✅ your frontend domain
+      "http://localhost:5173" // ✅ for local development (Vite) or 3000 for CRA
+    ],
+    credentials: true,
+}));
 
 // Body parser middleware
 app.use(express.json());
