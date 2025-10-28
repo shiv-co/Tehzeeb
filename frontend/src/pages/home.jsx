@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 // Replace with your actual image
-import backgroundImage from "../assets/images/fashion12.png";
+import backgroundImage from "../assets/images/fashion2.png";
 
 // Color Theme
 const COLORS = {
