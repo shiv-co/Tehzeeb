@@ -1,15 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 // Replace with your actual image
-import backgroundImage from "../assets/images/fashion2.png";
+import backgroundImage from "../assets/images/fashion2.png"; // Assuming this is the correct image path
 
 // Color Theme
 const COLORS = {
-  primary: "#B3541E",      // Terracotta
-  secondary: "#D6A74F",    // Mustard Gold
-  accent: "#A5A58D",       // Sage Green
-  text: "#3E2F1C",         // Deep Brown
-  background: "#F5EBDD",   // Linen / Sand
+  primary: "#B3541E",     // Terracotta
+  secondary: "#D6A74F",   // Mustard Gold
+  accent: "#A5A58D",     // Sage Green
+  text: "#3E2F1C",        // Deep Brown
+  background: "#F5EBDD",  // Linen / Sand
 };
 
 export default function HomePage() {
@@ -20,36 +20,37 @@ export default function HomePage() {
     >
       {/* Background image */}
       <div
-        className="absolute inset-0 w-full min-h-screen bg-cover bg-center  "
+        // --- THIS IS THE FIX ---
+        // Changed 'bg-center' to 'bg-top'
+        className="absolute inset-0 w-full min-h-screen bg-cover bg-top"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           zIndex: 0,
         }}
       >
-        {/* A semi-transparent overlay for readable text */}                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-         <div
+        {/* A semi-transparent overlay for readable text */}
+        <div
           className="absolute inset-0 bg-black opacity-20"
-          
-
-        ></div> 
+        ></div>
       </div>
 
       {/* Foreground content */}
-      <div className="relative z-10 flex items-start justify-center flex-col w-full px-4 ml-20 ">
+      {/* Adjusted padding and margin for better text placement */}
+      <div className="relative z-10 flex items-start justify-center flex-col w-full max-w-7xl mx-auto px-8 md:px-16 lg:ml-20 xl:ml-32">
         <h1
-          className="text-4xl md:text-6xl font-extrabold text-center leading-tight drop-shadow-lg"
+          className="text-4xl md:text-6xl font-extrabold text-left leading-tight drop-shadow-lg" // Changed text-center to text-left
           style={{ color: COLORS.primary }}
         >
           New <span className="block md:inline" style={{ color: COLORS.secondary }}>Arrivals</span>
         </h1>
         <p
-          className="mt-4 text-lg md:text-2xl font-semibold text-center drop-shadow-lg"
+          className="mt-4 text-lg md:text-2xl font-semibold text-left drop-shadow-lg" // Changed text-center to text-left
           style={{ color: COLORS.accent }}
         >
           NEW SEASON, NEW STYLES:
         </p>
         <p
-          className="text-md md:text-lg font-medium mt-2 text-center drop-shadow-lg"
+          className="text-md md:text-lg font-medium mt-2 text-left drop-shadow-lg" // Changed text-center to text-left
           style={{ color: COLORS.text }}
         >
           EXPLORE OUR <br />
@@ -74,6 +75,7 @@ export default function HomePage() {
       {/* WhatsApp Icon */}
       <a
         href="https://wa.me/916394728933?text=Hi%20there!%20I%20would%20like%20to%20know%20more%20about%20Tehzeeb%20creations"
+        target="_blank" // Added target blank
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50"
         aria-label="Chat on WhatsApp"
