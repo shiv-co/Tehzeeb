@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 // Replace with your actual image
-import backgroundImage from "../assets/images/fashion1.jpg";
+import backgroundImage from "../assets/images/fashion12.png";
 
 // Color Theme
 const COLORS = {
@@ -73,7 +73,7 @@ export default function HomePage() {
 
       {/* WhatsApp Icon */}
       <a
-        href="https://wa.me/918423461104?text=Hi%20there!%20I%20would%20like%20to%20know%20more%20about%20Dhaasu%20Talks!"
+        href="https://wa.me/919932012125?text=Hi%20there!%20I%20would%20like%20to%20know%20more%20about%20Dhaasu%20Talks!"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50"
         aria-label="Chat on WhatsApp"
