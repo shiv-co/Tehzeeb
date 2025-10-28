@@ -27,7 +27,7 @@ export const register = createAsyncThunk(
       // 3. Make POST request with axios - UPDATED for CORS
       const { data } = await axios.post(
         // 'http://localhost:5000/api/users/register',
-        "https://tehzeeb-m4q8-hawxh3zvr-shivam-singhs-projects-e9ef9bb8.vercel.app/api/users",
+        "https://tehzeeb-m4q8-hawxh3zvr-shivam-singhs-projects-e9ef9bb8.vercel.app/api/users/register",
         // "https://tehzeeb-m4q8-msedqhuwf-shivam-singhs-projects-e9ef9bb8.vercel.app/api/users",
          // <-- Use full URL
         { name, email, password },
