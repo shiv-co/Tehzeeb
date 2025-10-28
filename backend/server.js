@@ -61,60 +61,63 @@
 
 
 
-
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import connectDB from './config/db.js';
-
-// Cloudinary config
-import './config/cloudinary.js';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import "./config/cloudinary.js";
 
 // Routes
-import userRoutes from './routes/userRoutes.js';
-import productRoutes from './routes/productRoutes.js';
-import uploadRoutes from './routes/uploadRoutes.js';
+import userRoutes from "./routes/userRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 // Middleware
-import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 connectDB();
 
 const app = express();
 
-// ✅ CORS Configuration (Fixed)
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://tehzeeb.vercel.app"  // 🔥 removed trailing slash
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
- allowedHeaders: ["Content-Type", "Authorization"],
+// ✅ CORS FIX — put this BEFORE any routes or middleware
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // Vite local
+      "http://localhost:3000", // Create React App local
+      "https://tehzeeb.vercel.app", // frontend deployed site
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-}));
+  })
+);
 
-// Middleware to parse JSON and form data
+// ✅ Handle OPTIONS requests (important for preflight)
+
+
+// ✅ Body Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Root Route
-app.get('/', (req, res) => {
-  res.send('API is running...');
+app.get("/", (req, res) => {
+  res.send("API is running successfully 🚀");
 });
 
-// API Routes
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/upload', uploadRoutes);
+// ✅ Routes
+app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/upload", uploadRoutes);
 
-// Error Handling Middleware
+// ✅ Error handlers
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
-});
+
+app.listen(PORT, () =>
+  console.log(`✅ Server running in ${process.env.NODE_ENV} on port ${PORT}`)
+);
 
 export default app;
