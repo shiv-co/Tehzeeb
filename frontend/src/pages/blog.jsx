@@ -2,50 +2,59 @@ import React from "react";
 import img1 from "../assets/images/img1.jpg"
 import img2 from "../assets/images/img2.jpg"
 
+// Your Brand's Color Theme (copied from AboutPage)
+const COLORS = {
+  primary: '#B3541E',
+  secondary: '#D6A74F',
+  accent: '#A5A58D',
+  text: '#3E2F1C',
+  background: '#F5EBDD',
+};
+
 // Dummy Data for Blogs
 const mainBlog = {
-  title: "How to Record A Podcast Remotely | 4 Methods to Try",
+  title: "Exploring Sustainable Fashion: Our Commitment", // Adjusted title
   description:
-    "Learn how to record a podcast remotely with our full step-by-step guide. We'll show you 4 top ways to record a long-distance podcast with remote guests!",
+    "Discover Tehzeeb's journey towards sustainable practices. Learn about the materials we use and our vision for a greener future in fashion.", // Adjusted description
   author: {
-    name: "Stephen Robles",
-    role: "Video & Podcast Creator",
-    avatar: img1,
+    name: "Ananya Sharma", // Adjusted author
+    role: "Sustainability Lead",
+    avatar: img1, // Assuming img1 is appropriate
   },
-  tags: ["Podcast recording"],
-  date: "October 11, 2024",
-  readTime: "8 min",
+  tags: ["Sustainability", "Ethical Fashion"], // Adjusted tags
+  date: "October 28, 2025", // Adjusted date
+  readTime: "6 min",
   image: img1,
 };
 
 const trending = {
-  title: "Trending on Tehzeeb Creations",
-  image: img2,
+  title: "Trending Styles at Tehzeeb", // Adjusted title
+  image: img2, // Assuming img2 is appropriate
 };
 
 const sideBlogs = [
   {
     id: 1,
-    title: "How to Use iPhone as Webcam on Mac & Windows | Step-by-Step Guide",
-    date: "Jun 26, 2024",
-    readTime: "14 min",
-    tag: "Studio equipment",
+    title: "The Art of Handloom: Weaving Tradition into Modern Designs", // Adjusted title
+    date: "Sep 15, 2025", // Adjusted date
+    readTime: "5 min",
+    tag: "Craftsmanship", // Adjusted tag
     image: img2,
   },
   {
     id: 2,
-    title: "How to Record a Video Podcast (Remotely) in 5 Steps",
-    date: "Mar 21, 2024",
-    readTime: "14 min",
-    tag: "Video podcast",
+    title: "Styling Your Wardrobe for the Festive Season", // Adjusted title
+    date: "Aug 02, 2025", // Adjusted date
+    readTime: "7 min",
+    tag: "Style Guide", // Adjusted tag
     image: img2,
   },
   {
     id: 3,
-    title: "How to Improve Zoom Video Quality (Full Video & Audio Guide)",
-    date: "Mar 5, 2024",
-    readTime: "10 min",
-    tag: "Recording software",
+    title: "Behind the Scenes: The Making of Our Latest Collection", // Adjusted title
+    date: "Jul 10, 2025", // Adjusted date
+    readTime: "4 min",
+    tag: "Design Process", // Adjusted tag
     image: img1,
   },
 ];
@@ -53,7 +62,9 @@ const sideBlogs = [
 export default function BlogPage() {
   return (
     <div className="bg-[#F5EBDD] min-h-screen py-8 px-2">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+      {/* --- THIS IS THE FIX --- */}
+      {/* Added w-full and the xl/2xl max-width classes */}
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* Main Featured Blog */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-[#A5A58D]">
@@ -114,7 +125,7 @@ export default function BlogPage() {
                 src={blog.image}
                 alt={blog.title}
                 className="w-20 h-20 rounded-lg object-cover flex-shrink-0 bg-[#A5A58D]"
-                
+
               />
               <div className="flex-1">
                 <div className="font-semibold text-md text-[#3E2F1C] leading-tight line-clamp-2">

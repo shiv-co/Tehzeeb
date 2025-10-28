@@ -3,12 +3,12 @@ import React from "react";
 import PhoneImage from "../assets/images/phone.png";
 
 const COLORS = {
-  primary: "#B3541E",      // Terracotta
-  secondary: "#D6A74F",    // Mustard Gold
-  accent: "#A5A58D",       // Sage Green
-  text: "#3E2F1C",         // Deep Brown
-  background: "#F5EBDD",   // Linen / Sand
-  off: "#E7793D",          // For icons & emphasis
+  primary: "#B3541E",     // Terracotta
+  secondary: "#D6A74F",   // Mustard Gold
+  accent: "#A5A58D",     // Sage Green
+  text: "#3E2F1C",        // Deep Brown
+  background: "#F5EBDD",  // Linen / Sand
+  off: "#E7793D",        // For icons & emphasis
 };
 
 export default function ContactUsPage() {
@@ -28,7 +28,9 @@ export default function ContactUsPage() {
         
       </div>
       {/* Main Content */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-stretch gap-10 px-3 py-16">
+      {/* --- THIS IS THE FIX --- */}
+      {/* Added w-full and the xl/2xl max-width classes */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-stretch gap-10 px-3 py-16 xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* Left */}
         <div className="flex-1 flex flex-col justify-center">
           <h2

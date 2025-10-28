@@ -45,7 +45,9 @@ export default function AboutPage() {
       className="min-h-screen"
       style={{ background: COLORS.background, color: COLORS.text }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row">
+      {/* --- THIS IS THE FIX --- */}
+      {/* Added w-full and the xl/2xl max-width classes */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* --- 1. Image Column --- */}
         <div className="md:w-1/2">
           <img
@@ -88,3 +90,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FiShoppingBag, FiMenu, FiX, FiUser } from 'react-icons/fi';
 import logo from '/icons/Logo1.png';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux'; // <-- 1. Import hooks
-import { logout } from '../redux/authSlice'; // <-- 2. Import logout action (check path!)
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/authSlice'; // Check this path!
 
 const COLORS = {
   primary: '#B3541E',
@@ -12,8 +12,6 @@ const COLORS = {
   text: '#3E2F1C',
   background: '#F5EBDD',
 };
-
-// const mockUser = { isLoggedIn: false, name: "Ananya Singh" }; // <-- 3. Remove mock user
 
 const menu = [
   { name: 'Home', href: '/' },
@@ -27,11 +25,9 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  // 4. Get real user info and dispatch function
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // 5. Create logout handler
   const logoutHandler = () => {
     dispatch(logout());
     setProfileOpen(false); // Close dropdown on logout
@@ -45,7 +41,9 @@ export default function Navbar() {
         borderBottom: `2px solid ${COLORS.accent}`,
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* --- THIS IS THE FIX --- */}
+      {/* We keep max-w-7xl as default, but go wider on xl and 2xl screens */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* main row */}
         <div className="flex items-center h-full">
           {/* Brand */}
@@ -97,11 +95,9 @@ export default function Navbar() {
                 onClick={() => setProfileOpen((p) => !p)}
                 aria-label="Profile Menu"
               >
-                {/* 6. Display User's Initial if logged in, or Icon if not */}
                 {userInfo ? (
                   <div
-                    className="flex items-center justify-center h-8 w-8 rounded-full bg-[#F5EBDD] text-xl font-bold shadow-inner"
-                    // style={{ background: COLORS., color: '#fff' }}
+                    className="flex items-center justify-center h-8 w-8 rounded-full bg-[#F5EBDD] text-primary text-xl font-bold shadow-inner" // <-- Added text-primary
                   >
                     {userInfo.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
                   </div>
@@ -109,8 +105,7 @@ export default function Navbar() {
                   <FiUser size={26} />
                 )}
               </button>
-                   
-
+                  
               {profileOpen && (
                 <div
                   className="absolute right-0 mt-3 w-64 shadow-xl rounded-xl border p-5 flex flex-col gap-3"
@@ -120,7 +115,6 @@ export default function Navbar() {
                     borderColor: COLORS.accent,
                   }}
                 >
-                  {/* 7. Check for real userInfo instead of user.isLoggedIn */}
                   {!userInfo ? (
                     <>
                       <div className="text-center">
@@ -167,7 +161,6 @@ export default function Navbar() {
                             color: '#fff',
                           }}
                         >
-                          {/* 8. Use real userInfo name */}
                           {userInfo.name.split(' ').map((n) => n[0]).join('')}
                         </div>
                         <div>
@@ -175,7 +168,6 @@ export default function Navbar() {
                             className="font-bold text-lg"
                             style={{ color: COLORS.primary }}
                           >
-                            {/* 9. Use real userInfo name */}
                             {userInfo.name}
                           </div>
                           <div
@@ -203,7 +195,7 @@ export default function Navbar() {
                           background: COLORS.secondary,
                           color: COLORS.text,
                         }}
-                        onClick={logoutHandler} // <-- 10. Use logoutHandler
+                        onClick={logoutHandler} // <-- Use logoutHandler
                       >
                         Logout
                       </button>
@@ -262,3 +254,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

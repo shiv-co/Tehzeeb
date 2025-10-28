@@ -73,7 +73,7 @@ export default function HomePage() {
 
       {/* WhatsApp Icon */}
       <a
-        href="https://wa.me/919932012125?text=Hi%20there!%20I%20would%20like%20to%20know%20more%20about%20Dhaasu%20Talks!"
+        href="https://wa.me/916394728933?text=Hi%20there!%20I%20would%20like%20to%20know%20more%20about%20Tehzeeb%20creations"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50"
         aria-label="Chat on WhatsApp"
