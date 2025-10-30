@@ -120,7 +120,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-4 text-2xl">
               <a
-                href="https://instagram.com/tehzeebcreations" // Replace with actual link
+                href="https://www.instagram.com/tehzeebcreations.in/" // Replace with actual link
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -139,7 +139,7 @@ export default function Footer() {
               >
                 <FiFacebook />
               </a>
-              <a
+              {/* <a
                 href="https://pinterest.com/tehzeebcreations" // Replace with actual link
                 target="_blank"
                 rel="noopener noreferrer"
@@ -148,8 +148,8 @@ export default function Footer() {
                 style={{ color: COLORS.primary }}
               >
                 <FaPinterestP />
-              </a>
-              <a
+              </a> */}
+              {/* <a
                 href="https://youtube.com/tehzeebcreations" // Replace with actual link
                 target="_blank"
                 rel="noopener noreferrer"
@@ -158,7 +158,7 @@ export default function Footer() {
                 style={{ color: COLORS.primary }}
               >
                 <FiYoutube />
-              </a>
+              </a> */}
             </div>
           </div>
 
