@@ -56,8 +56,13 @@ export const login = createAsyncThunk(
 
       // Use your deployed URL
       const { data } = await axios.post(
+<<<<<<< HEAD
         // 'http://localhost:5000/api/users/login',
         'https://tehzeeb-m4q8.vercel.app/api/users/login',
+=======
+        'http://localhost:5000/api/users/login',
+        // 'https://tehzeeb-m4q8.vercel.app/api/users/login',
+>>>>>>> 17c8295b88c3350c38b5fca25f054893278085d1
         { email, password },
         config
       );
@@ -94,8 +99,13 @@ export const updateUserProfile = createAsyncThunk(
 
       // Make PUT request to the protected profile route
       const { data } = await axios.put(
+<<<<<<< HEAD
         // 'http://localhost:5000/api/users/profile',
         'https://tehzeeb-m4q8.vercel.app/api/users/profile', // Use your deployed URL
+=======
+        'http://localhost:5000/api/users/profile',
+        // 'https://tehzeeb-m4q8.vercel.app/api/users/profile', // Use your deployed URL
+>>>>>>> 17c8295b88c3350c38b5fca25f054893278085d1
         userData, // Send the user data (name, email, phone, gender)
         config
       );
