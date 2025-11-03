@@ -235,8 +235,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // 🔹 Base URL — change this to your deployed backend when needed
-const BASE_URL = "http://localhost:5000/api/products";
-// const BASE_URL = "https://tehzeeb-m4q8.vercel.app/api/products";
+// const BASE_URL = "http://localhost:5000/api/products";
+const BASE_URL = "https://tehzeeb-m4q8.vercel.app/api/products";
 
 // --- FETCH ALL PRODUCTS ---
 export const fetchProducts = createAsyncThunk(
