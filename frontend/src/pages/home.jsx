@@ -82,7 +82,7 @@ export default function HomePage() {
       >
         <div
           className="p-3 rounded-full shadow-lg hover:scale-110 transition-transform"
-          style={{ background: COLORS.accent }}
+          style={{ background: COLORS.primary }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

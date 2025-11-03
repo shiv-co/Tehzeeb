@@ -1,37 +1,37 @@
-import React from "react";
-// 1. IMPORT useSelector, useDispatch
-import { useSelector, useDispatch } from "react-redux";
-// 2. IMPORT the new 'removeFromCart' action
-import { removeFromCart } from "../redux/cartSlice"; // <-- Check this path!
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+} from '../redux/cartSlice'; // <-- Check this path!
+import { Link } from 'react-router-dom';
 
 // Color Theme
-const COLORS = {
-  primary: "#B3541E",      // Terracotta
-  secondary: "#D6A74F",    // Mustard Gold
-  accent: "#A5A58D",       // Sage Green
-  text: "#3E2F1C",         // Deep Brown
-  background: "#F5EBDD",   // Linen / Sand
-};
+
 export default function CartPage() {
-  // 3. GET dispatch function
   const dispatch = useDispatch();
-  
-  // Get cart items from Redux store
-  const { cartItems } = useSelector((state) => state.cart);
 
-  // Calculate total
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // Get cart items AND the calculated total from the Redux store
+  const { cartItems, cartTotalAmount } = useSelector((state) => state.cart);
 
-  // 4. CREATE handler function
+  // Handler function for removing
   const handleRemove = (id) => {
     dispatch(removeFromCart(id)); // Dispatch the action with the item's id
   };
 
+  // Handlers for quantity
+  const handleDecrease = (id) => {
+    dispatch(decreaseQuantity(id));
+  };
+  const handleIncrease = (id) => {
+    dispatch(increaseQuantity(id));
+  };
+
   return (
-    <div className="min-h-screen flex shadow-2xl shadow-[#D6A74F]/40 flex-col items-center py-8 px-2 bg-[#F5EBDD]">
+    <div
+      className="min-h-screen flex shadow-2xl shadow-[#D6A74F]/40 flex-col items-center py-8 px-2 bg-[#F5EBDD]"
+    >
       <div className="w-full max-w-3xl bg-white rounded-xl shadow-xl p-8">
         <h1 className="text-3xl font-bold text-[#B3541E] mb-8 text-center">
           My Cart
@@ -49,28 +49,44 @@ export default function CartPage() {
                   key={item.id}
                   className="flex flex-col md:flex-row items-center gap-4 border-b pb-4"
                 >
-                  {/* THIS WILL WORK NOW because 'item.image' exists */}
+                  {/* This will now work because item.image is a valid string */}
                   <img
                     src={item.image}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded-md shadow"
                   />
                   <div className="flex-1 flex flex-col items-start">
-                    {/* THIS WILL WORK NOW because 'item.name' exists */}
                     <div className="font-bold text-[#3E2F1C] text-lg mb-1">
                       {item.name}
                     </div>
-                    {/* (Add color/size later if you need them) */}
                     <div className="flex items-center gap-3">
                       <span className="text-[#B3541E] font-semibold">
                         ₹ {item.price.toLocaleString()}
                       </span>
                       <span className="mx-2 text-[#A5A58D]">×</span>
-                      <span className="text-[#3E2F1C]">{item.quantity}</span>
+                      {/* --- ADDED QUANTITY CONTROLS --- */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleDecrease(item.id)}
+                          className="w-6 h-6 rounded-full font-bold text-[#B3541E] bg-[#A5A58D]"
+                       
+                        >
+                          -
+                        </button>
+                        <span className="text-[#3E2F1C] w-4 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleIncrease(item.id)}
+                          className="w-6 h-6 rounded-full font-bold text-[#B3541E] bg-[#A5A58D]"
+                       
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* 5. ADD the onClick to the button */}
+
                   <button
                     onClick={() => handleRemove(item.id)}
                     className="text-[#D6A74F] font-semibold hover:text-[#B3541E] transition"
@@ -83,21 +99,22 @@ export default function CartPage() {
 
             {/* Cart Summary */}
             <div className="mt-8 flex flex-col items-center justify-between gap-6">
+              {/* --- THIS IS THE FIX FOR THE TOTAL --- */}
               <div className="text-xl font-bold text-[#B3541E]">
-                Total: ₹ {total.toLocaleString()}
+                Total: ₹ {cartTotalAmount.toLocaleString()}
               </div>
-              <a
-                href="/checkout"
+              <Link
+                to="/checkout"
                 className="px-8 py-3 rounded-lg text-lg bg-[#B3541E] text-white font-bold hover:bg-[#D6A74F] transition shadow"
               >
                 Proceed to Checkout
-              </a>
-              <a
-                href="/shop"
+              </Link>
+              <Link
+                to="/shop"
                 className="px-8 py-3 rounded-lg bg-[#B3541E] text-white font-bold hover:bg-[#D6A74F] transition shadow"
               >
                 Continue to Shopping
-              </a>
+              </Link>
             </div>
           </>
         )}
@@ -105,3 +122,4 @@ export default function CartPage() {
     </div>
   );
 }
+

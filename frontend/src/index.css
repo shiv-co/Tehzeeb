@@ -1,1 +1,16 @@
 @import "tailwindcss";
+/* Toastify custom colors */
+.Toastify__toast--success {
+  background-color: #B3541E !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.Toastify__progress-bar--success {
+  background: #D6A74F !important;
+}
+.Toastify__toast--error {
+  background-color: #FF4C4C !important;
+  color: #fff !important;
+  font-weight: 500;
+}
