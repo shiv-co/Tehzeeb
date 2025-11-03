@@ -3,17 +3,24 @@ const router = express.Router();
 import {
   getProducts,
   getProductById,
-  createProduct, // <-- 1. Import new controller function
+  createProduct,
+  updateProduct,
+  deleteProduct,
 } from '../controllers/productController.js';
-import { protect, admin } from '../middleware/authMiddleware.js'; // <-- 2. Import middleware
+import { protect, admin } from '../middleware/authMiddleware.js';
 
-// Route for getting all products
+// Public Routes
+router.route('/').get(getProducts);
+
+// Admin Routes
 router
   .route('/')
-  .get(getProducts)
-  .post(protect, admin, createProduct); // <-- 3. Add POST route (Admin only)
+  .post(protect, admin, createProduct); // Create product (Admin only)
 
-// Route for getting a single product by its ID
-router.route('/:id').get(getProductById);
+router
+  .route('/:id')
+  .get(getProductById) // Get product by ID
+  .put(protect, admin, updateProduct) // Update product
+  .delete(protect, admin, deleteProduct); // Delete product
 
 export default router;

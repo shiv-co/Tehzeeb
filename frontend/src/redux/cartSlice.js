@@ -1,99 +1,114 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// Helper function to update totals
-const updateCart = (state) => {
-  state.totalItems = state.cartItems.reduce(
-    (acc, item) => acc + item.quantity,
-    0
-  );
-  state.totalPrice = state.cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
-  
-  // Save to local storage
-  localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
-  return state;
+// Function to get cart from localStorage
+const getInitialCart = () => {
+  try {
+    const cart = localStorage.getItem('cart');
+    if (cart) {
+      return JSON.parse(cart);
+    }
+  } catch (e) {
+    console.error('Failed to parse cart from localStorage', e);
+  }
+  // Return default state if empty or error
+  return {
+    cartItems: [],
+    cartTotalQuantity: 0,
+    cartTotalAmount: 0,
+  };
 };
 
-const initialState = {
-  cartItems: localStorage.getItem('cartItems')
-    ? JSON.parse(localStorage.getItem('cartItems'))
-    : [],
-  totalItems: 0,
-  totalPrice: 0,
+const initialState = getInitialCart();
+
+// Helper function to update state and localStorage
+const updateStateAndStorage = (state) => {
+  // Recalculate totals
+  let totalQuantity = 0;
+  let totalAmount = 0;
+  state.cartItems.forEach((item) => {
+    totalQuantity += item.quantity;
+    totalAmount += item.quantity * item.price;
+  });
+
+  state.cartTotalQuantity = totalQuantity;
+  state.cartTotalAmount = totalAmount;
+
+  // Save to localStorage
+  localStorage.setItem('cart', JSON.stringify(state));
 };
-
-// Recalculate initial totals
-const initialTotals = initialState.cartItems.reduce(
-  (acc, item) => {
-    acc.totalItems += item.quantity;
-    acc.totalPrice += item.price * item.quantity;
-    return acc;
-  },
-  { totalItems: 0, totalPrice: 0 }
-);
-
-initialState.totalItems = initialTotals.totalItems;
-initialState.totalPrice = initialTotals.totalPrice;
-
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    // payload will be an object: { ...product, qty: 3 }
+    // This is the main fix
     addToCart(state, action) {
-      const newItem = action.payload;
+      const product = action.payload; // This is the product from ProductCard
       const existingItem = state.cartItems.find(
-        (item) => item._id === newItem._id
+        (item) => item.id === product._id
       );
 
       if (existingItem) {
-        // If item exists, update its quantity
-        existingItem.quantity = newItem.quantity;
+        // If item already in cart, increase quantity
+        existingItem.quantity += 1;
       } else {
-        // Otherwise, add it as a new item
-        // Note: productCard sends a product, details page sends { ...product, qty }
-        // We need to handle both.
+        // --- THIS IS THE FIX ---
+        // Create a new cartItem object with the correct structure
         state.cartItems.push({
-          ...newItem,
-          quantity: newItem.quantity || 1, // Default to 1 if no qty is passed
+          id: product._id, // Map _id to id
+          name: product.name,
+          price: product.price,
+          image: product.images[0], // <-- Get the *first image* from the array
+          quantity: 1,
         });
       }
-      // Update totals
-      updateCart(state);
+      // Recalculate totals and save to localStorage
+      updateStateAndStorage(state);
     },
 
-    // payload will be just the item's _id
     removeFromCart(state, action) {
-      const itemIdToRemove = action.payload;
+      const itemIdToRemove = action.payload; // This is item.id
       state.cartItems = state.cartItems.filter(
-        (item) => item._id !== itemIdToRemove
+        (item) => item.id !== itemIdToRemove
       );
-      // Update totals
-      updateCart(state);
+      // Recalculate totals and save to localStorage
+      updateStateAndStorage(state);
     },
-    
-    // payload will be { _id, quantity }
-    updateCartQuantity(state, action) {
-      const { _id, quantity } = action.payload;
-      const itemToUpdate = state.cartItems.find((item) => item._id === _id);
 
-      if (itemToUpdate) {
-        itemToUpdate.quantity = quantity;
+    // You can add these later for quantity buttons
+    decreaseQuantity(state, action) {
+      const itemToDecrease = state.cartItems.find(
+        (item) => item.id === action.payload
+      );
+      if (itemToDecrease.quantity > 1) {
+        itemToDecrease.quantity -= 1;
+      } else {
+        // If quantity is 1, remove it
+        state.cartItems = state.cartItems.filter(
+          (item) => item.id !== action.payload
+        );
       }
-      updateCart(state);
+      updateStateAndStorage(state);
     },
 
-    clearCart(state) {
-      state.cartItems = [];
-      updateCart(state);
+    increaseQuantity(state, action) {
+      const itemToIncrease = state.cartItems.find(
+        (item) => item.id === action.payload
+      );
+      if (itemToIncrease) {
+        itemToIncrease.quantity += 1;
+      }
+      updateStateAndStorage(state);
     },
   },
 });
 
-export const { addToCart, removeFromCart, updateCartQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  decreaseQuantity,
+  increaseQuantity,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;
+

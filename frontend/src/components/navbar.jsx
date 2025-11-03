@@ -52,7 +52,7 @@ export default function Navbar() {
               <img
                 src={logo}
                 alt="Tehzeeb Creations Logo"
-                className="h-20 w-auto transform -translate-x-1" // small left shift
+                className="h-12 md:h-20 w-auto transform -translate-x-1" // small left shift
               />
             </Link>
           </div>

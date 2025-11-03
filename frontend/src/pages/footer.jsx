@@ -15,21 +15,21 @@ const COLORS = {
 export default function Footer() {
   return (
     <footer
-      className="pt-10 pb-4 px-4 md:px-16"
+      className="pt-10 pb-2 px-4 md:px-16"
       style={{ background: COLORS.background, color: COLORS.text }}
     >
       {/* --- 4K Layout Fix --- */}
       <div className="w-full max-w-7xl mx-auto xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* --- Responsive Grid --- */}
         {/* Mobile: 1 col, Tablet: 2 cols, Desktop: 5 cols (incl logo) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:mb-4">
           
           {/* --- 2. Logo Column (first on large screens) --- */}
-          <div className="lg:col-span-1 flex flex-col items-start mb-6 lg:mb-0">
+          <div className="lg:col-span-1 flex flex-col items-start md:mb-4 lg:mb-0">
              <img
                 src={logo}
                 alt="Tehzeeb Creations Logo"
-                className="h-40 w-auto mb-4" // Adjusted size
+                className="h-20 md:h-40 w-auto " // Adjusted size
               />
               <p className="text-sm" style={{ color: COLORS.accent }}>
                 Crafting elegance with tradition. Discover timeless fashion inspired by culture.
@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="">
-            <h3 className="text-lg font-bold mb-3 flex items-center gap-2" style={{ color: COLORS.primary }}>
+            <h3 className="text-lg font-bold md:mb-3 flex items-center gap-2" style={{ color: COLORS.primary }}>
               Quick Links
             </h3>
             <ul className="md:space-y-2 flex flex-wrap justify-self-auto gap-2 text-center"  style={{ color: COLORS.text }}>
@@ -112,13 +112,13 @@ export default function Footer() {
 
           {/* Social / Follow Us */}
           <div>
-            <h3 className="text-lg font-bold mb-3 flex items-center gap-2" style={{ color: COLORS.primary }}>
+            <h3 className="text-lg font-bold md:mb-3 flex  items-center gap-2" style={{ color: COLORS.primary }}>
               Follow Us
             </h3>
-            <p className="mb-3 text-sm" style={{ color: COLORS.accent }}> {/* Adjusted text size */}
+            <p className=" mb-1 md:mb-3 text-sm" style={{ color: COLORS.accent }}> {/* Adjusted text size */}
               Stay connected and get inspired by our latest designs & styling ideas:
             </p>
-            <div className="flex gap-4 text-2xl">
+            <div className="flex gap-4 text-2xl justify-center">
               <a
                 href="https://www.instagram.com/tehzeebcreations.in/" // Replace with actual link
                 target="_blank"
@@ -164,10 +164,10 @@ export default function Footer() {
 
           {/* Disclaimer */}
           <div>
-            <h3 className="text-lg font-bold mb-3 flex items-center gap-2" style={{ color: COLORS.primary }}>
+            <h3 className="text-lg font-bold md:mb-3 flex items-center justify-center gap-1 text-center " style={{ color: COLORS.primary }}>
               Disclaimer
             </h3>
-            <p className="text-sm mb-4" style={{ color: COLORS.accent }}>
+            <p className="text-sm md:mb-4" style={{ color: COLORS.accent }}>
               All products and designs showcased on Tehzeeb Creations are created with utmost care and originality. <br />
               Colors may slightly vary due to photographic lighting or screen settings.
             </p>
@@ -175,13 +175,13 @@ export default function Footer() {
         </div>
         {/* Copyright */}
         <div
-          className="border-t pt-4 flex flex-col md:flex-row justify-between items-center text-sm gap-2"
+          className="border-t pt-2 md:pt-4 flex flex-col md:flex-row justify-between items-center text-sm gap-2"
           style={{ borderColor: COLORS.accent, color: COLORS.text }}
         >
-          <div className="text-sm md:text-base" style={{ color: COLORS.primary }}> {/* Adjusted text size */}
+          <div className="text-xs md:text-base" style={{ color: COLORS.primary }}> {/* Adjusted text size */}
             © 2025 Tehzeeb Creations. All Rights Reserved.
           </div>
-          <div className="text-sm md:text-base" style={{ color: COLORS.primary }}> {/* Adjusted text size */}
+          <div className="text-xs md:text-base" style={{ color: COLORS.primary }}> {/* Adjusted text size */}
             Designed & Developed with <span style={{ color: COLORS.secondary }}></span> by TP India Network
           </div>
         </div>

@@ -12,8 +12,15 @@ import AboutUs from "../pages/aboutUs";
 import Footer from "../pages/footer";
 import CartPage from "../pages/cart";
 import ProfileEditPage from "../pages/profileEdit";
-import BlogPage from "../pages/blog";
+import BlogPage from "../pages/blog";                               
 import ContactUsPage from "../pages/contactUs";
+import AdminDashboard from "./adminDashboard";
+import AdminRoute from "./adminRoute";
+import UserListPage from "../pages/userListPage";
+import ProductListPage from "../pages/productListPage";
+import ProductEditPage from "../pages/productEditPage";
+// import ManageProductsScreen from "../pages/manageProductScreen";
+// import ProductEditScreen from "../pages/productEditScreen";
 
 // Optional: Add a NotFound component for unmatched routes
 function NotFound() {
@@ -41,6 +48,21 @@ export default function AppRouter() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/footer" element={<Footer />} />
         <Route path="*" element={<NotFound />} />
+
+         <Route path="" element={<AdminRoute />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<UserListPage />} />
+          <Route path="/admin/products" element={<ProductListPage />} /> 
+          <Route path="/admin/product/:id/edit" element={<ProductEditPage />} />
+          <Route path="/admin/product/create" element={<ProductEditPage />} />
+
+
+          {/* <Route path="/admin/products" element={<ManageProductsScreen />} />
+          <Route path="/admin/product/:id/edit" element={<ProductEditScreen />} /> */}
+
+          {/*<Route path="/admin/orders" element={<OrderListPage />} /> 
+          */}
+        </Route>                                                                      
       </Routes>
     </Router>
   );

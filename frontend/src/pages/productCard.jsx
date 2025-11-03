@@ -428,9 +428,9 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow flex flex-col overflow-hidden w-full max-w-xs relative "
+      className="bg-white rounded-sm shadow-lg hover:shadow-2xl transition-shadow flex flex-col overflow-hidden w-full max-w-xs relative "
       style={{
-        border: `1.5px solid ${COLORS.accent}`,
+        border: `1px solid ${COLORS.accent}`,
         minHeight: 430, // Adjust as needed
       }}
     >
@@ -526,27 +526,27 @@ export default function ProductCard({ product }) {
         </div>
       </div>
       {/* --- PRODUCT INFO --- */}
-      <div className="p-4 pb-3 flex flex-col flex-grow">
+      <div className="p-2 pb-2 flex flex-col flex-grow">
         <h2
-          className="font-bold text-lg mb-1 truncate" // Truncate for long names
+          className="font-semibold text-base truncate" // Truncate for long names
           style={{ color: COLORS.text }}
         >
           {product.name}
         </h2>
         <div
-          className="text-sm mb-3 text-[#7C6A51] truncate"
+          className="text-sm mb-1 text-[#7C6A51] truncate"
           style={{ color: COLORS.accent }}
         >
           {product.description.substring(0, 50)}...
         </div>
-        <div className="mb-3 flex items-baseline gap-3">
-          <span className="font-bold text-lg" style={{ color: COLORS.primary }}>
+        <div className="mb-1 flex items-baseline gap-3">
+          <span className="font-bold text-base" style={{ color: COLORS.primary }}>
             Rs. {product.price}
           </span>
           {product.originalPrice && (
             <>
               <span
-                className="line-through text-base"
+                className="line-through text-sm"
                 style={{ color: COLORS.accent }}
               >
                 Rs. {product.originalPrice}
@@ -559,9 +559,9 @@ export default function ProductCard({ product }) {
         <div className="mt-auto flex gap-2">
           <button
             onClick={handleAddToCart}
-            className="w-1/2 px-3 py-2 rounded-lg font-semibold transition text-base"
+            className="w-1/2   rounded-lg font-semibold transition text-base"
             style={{
-              border: `2px solid ${COLORS.primary}`,
+              border: `1px solid ${COLORS.primary}`,
               color: COLORS.primary,
               background: COLORS.background,
             }}
@@ -578,7 +578,7 @@ export default function ProductCard({ product }) {
           </button>
           <button
             onClick={handleBuyNow}
-            className="w-1/2 px-3 py-2 rounded-lg font-semibold transition text-base"
+            className="w-1/2 px-1 py-2 rounded-lg font-semibold transition text-base"
             style={{
               border: `2px solid ${COLORS.secondary}`,
               color: COLORS.secondary,
