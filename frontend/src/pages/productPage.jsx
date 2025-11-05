@@ -133,7 +133,7 @@ export default function ProductsPage() {
         Shop Our Collection
       </h1>
       {/* 5. MAP OVER REAL PRODUCTS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-10 gap-y-12 place-items-center mx-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:gap-x-10  md:gap-y-12 place-items-center md:mx-10">
         {products.map((product) => (
           <div
             key={product._id} // <-- Use _id from MongoDB

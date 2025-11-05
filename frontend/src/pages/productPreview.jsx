@@ -244,6 +244,8 @@
 //     </div>
 //   );
 // }
+
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -265,26 +267,31 @@ export default function ProductDetailsPage() {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [qty, setQty] = useState(1);
+  const [zoomedImage, setZoomedImage] = useState(null); // 🔥 NEW — for zoom modal
 
-  // Get product data from Redux store
   const { product, loading, error } = useSelector(
     (state) => state.products.selectedProduct
   );
 
   useEffect(() => {
-    // Reset state on ID change
     setActiveImageIndex(0);
     setQty(1);
-    // Fetch product details when component loads or ID changes
     dispatch(fetchProductById(productId));
   }, [productId, dispatch]);
 
   const addToCartHandler = () => {
-    // Dispatch with the product and the selected quantity
     dispatch(addToCart({ ...product, quantity: Number(qty) }));
-    // Navigate to the cart page
     navigate('/cart');
   };
+
+  // 🔥 NEW — close zoom on ESC key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setZoomedImage(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   if (loading === 'pending' || loading === 'idle') {
     return (
@@ -313,111 +320,89 @@ export default function ProductDetailsPage() {
   return (
     <div className="min-h-screen py-12 px-4" style={{ background: COLORS.background }}>
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
-        
-        {/* --- Image Gallery (Container) --- */}
-        {/* On mobile: flex-col. On desktop: flex-row */}
+
+        {/* --- Image Gallery --- */}
         <div className="flex-1 flex flex-col md:flex-row gap-4">
 
-          {/* Thumbnail strip */}
-          {/* Mobile: grid with 5 cols, at the bottom (order-2) */}
-          {/* Desktop: flex col, on the left (md:order-1) */}
+          {/* Thumbnails */}
           <div className="grid grid-cols-5 gap-3 md:flex md:flex-col md:order-1 order-2">
             {product.images.map((img, index) => (
               <button
                 key={index}
-                // On desktop, give thumbnails a fixed width and height
                 className="aspect-square md:w-24 md:h-24 rounded-md overflow-hidden shadow"
-                // style={{
-                //   border: `3px solid ${
-                //     index === activeImageIndex ? COLORS.primary : 'transparent'
-                //   }`,
-                //   opacity: index === activeImageIndex ? 1 : 0.7,
-                // }}
                 onClick={() => setActiveImageIndex(index)}
               >
                 <img
-                  src={img} // Use full-res for thumbnails, browser will cache
+                  src={img}
                   alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover ${
+                    index === activeImageIndex ? 'ring-2 ring-[#B3541E]' : ''
+                  }`}
                 />
               </button>
             ))}
           </div>
 
-          {/* Main Image Container */}
-          {/* Mobile: at the top (order-1) */}
-          {/* Desktop: on the right (md:order-2), takes up remaining space (md:flex-1) */}
+          {/* Main Image */}
           <div
-            className="w-full md:flex-1 order-1 md:order-2  overflow-hidden flex items-center justify-center"
-            // style={{ 
-            //   border: `2px solid ${COLORS.accent}`,
-            //   backgroundColor: '#FFFFFF',
-            // }}
+            className="w-full md:flex-1 order-1 md:order-2 overflow-hidden flex items-center justify-center"
           >
             <img
               src={product.images[activeImageIndex]}
               alt={product.name}
-              className="w-full h-auto max-h-[480px] object-contain"
+              onClick={() => setZoomedImage(product.images[activeImageIndex])} // 🔥 Added click-to-zoom
+              className="w-full h-auto max-h-[480px] object-contain cursor-zoom-in transition-transform duration-300 hover:scale-[1.02]"
             />
           </div>
         </div>
 
         {/* --- Product Info --- */}
         <div className="flex-1 flex flex-col">
-          <h1
-            className="text-4xl font-extrabold mb-4"
-            style={{ color: COLORS.text }}
-          >
+          <h1 className="text-lg md:text-4xl font-semibold md:font-extrabold mb-1 md:mb-4" style={{ color: COLORS.text }}>
             {product.name}
           </h1>
 
-          <div
-            className="text-3xl font-semibold mb-6"
-            style={{ color: COLORS.primary }}
-          >
+          <div className="text-lg md:text-3xl font-semibold mb-1 md:mb-6" style={{ color: COLORS.primary }}>
             Rs. {product.price.toLocaleString()}
           </div>
 
-          <div className="mb-6">
-            <span
-              className="font-semibold text-lg"
-              style={{ color: COLORS.text }}
-            >
+          <div className="mb-1 md:mb-6">
+            <span className="font-semibold text-sm md:text-lg" style={{ color: COLORS.text }}>
               Status:
             </span>
             <span
-              className="ml-2 text-lg font-bold"
+              className="ml-2 text-sm md:text-lg md:font-bold font-semibold"
               style={{
-                color:
-                  product.countInStock > 0 ? COLORS.accent : COLORS.primary,
+                color: product.countInStock > 0 ? COLORS.accent : COLORS.primary,
               }}
             >
               {product.countInStock > 0 ? 'In Stock' : 'Out of Stock'}
             </span>
           </div>
 
+            <div className="md:mt-8 mt-1">
+            {/* <h3 className="text-sm md:text-xl font-semibold md:mb-3 mb-1" style={{ color: COLORS.text }}>Description:</h3> */}
+            <p className="text-base " style={{ color: COLORS.text, lineHeight: 1.7 }}>
+              Description: {product.description}
+            </p>
+
           {/* Quantity Selector */}
           {product.countInStock > 0 && (
-            <div className="mb-6 flex items-center gap-4">
-              <label
-                htmlFor="qty"
-                className="font-semibold text-lg"
-                style={{ color: COLORS.text }}
-              >
+            <div className="mb-2 md:mb-6 flex items-center gap-2 md:gap-4">
+              <label htmlFor="qty" className="font-semibold text-sm md:text-lg" style={{ color: COLORS.text }}>
                 Quantity:
               </label>
               <select
                 id="qty"
                 value={qty}
                 onChange={(e) => setQty(e.target.value)}
-                className="px-4 py-2 rounded-lg border-2"
+                className="px-1 md:px-4 py-1 md:py-2 rounded-lg border-2"
                 style={{
                   borderColor: COLORS.accent,
                   background: 'white',
                   color: COLORS.text,
                 }}
               >
-                {/* Create an array from 0 to countInStock - 1, max of 10 */}
                 {[...Array(Math.min(product.countInStock, 10)).keys()].map((x) => (
                   <option key={x + 1} value={x + 1}>
                     {x + 1}
@@ -426,34 +411,51 @@ export default function ProductDetailsPage() {
               </select>
             </div>
           )}
-          
-          {/* Add to Cart Button */}
+
+          {/* Buttons */}
           <button
             onClick={addToCartHandler}
             disabled={product.countInStock === 0}
-            className="w-full py-4 rounded-xl text-lg font-bold text-white shadow-lg transition disabled:opacity-50"
+            className="w-full py-2 mb-2 md:py-4 rounded-xl text-base md:text-lg font-bold text-white shadow-lg transition disabled:opacity-50"
             style={{ background: COLORS.primary }}
           >
             {product.countInStock > 0 ? 'Add to Cart' : 'Out of Stock'}
           </button>
-           <button
+
+          <button
             onClick={addToCartHandler}
             disabled={product.countInStock === 0}
-            className="w-full py-4 mt-4 rounded-xl  text-lg font-bold text-white shadow-lg transition disabled:opacity-50"
+            className=" w-full py-2 md:py-4 rounded-xl text-base md:text-lg  font-bold text-white shadow-lg transition disabled:opacity-50"
             style={{ background: COLORS.primary }}
           >
             {product.countInStock > 0 ? 'Buy Now' : 'Out of Stock'}
           </button>
-          
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold mb-3" style={{ color: COLORS.text }}>Description:</h3>
-            <p className="text-base" style={{ color: COLORS.text, lineHeight: 1.7 }}>
-              {product.description}
-            </p>
+
+        
           </div>
         </div>
       </div>
+
+      {/* 🔥 Zoom Modal Overlay */}
+      {zoomedImage && (
+        <div
+          className="fixed inset-0 bg-black/80 flex justify-center items-center z-50"
+          onClick={() => setZoomedImage(null)}
+        >
+          <img
+            src={zoomedImage}
+            alt="Zoomed product"
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-zoom-out transition-transform duration-500 scale-100 hover:scale-120"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            onClick={() => setZoomedImage(null)}
+            className="absolute top-6 right-8 text-white text-3xl font-bold hover:text-[#fec713] transition"
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-

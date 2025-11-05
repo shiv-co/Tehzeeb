@@ -330,7 +330,7 @@
 
 
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect} from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice"; // Check this path!
 import { useNavigate } from "react-router-dom"; // Import for Buy Now
@@ -359,7 +359,7 @@ function getCloudinaryThumbnail(url) {
 export default function ProductCard({ product }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(null);
-  const [isSliding, setIsSliding] = useState(false);
+
   const [showPopup, setShowPopup] = useState(false); // For "Added to Cart"
   const intervalRef = useRef(null);
   const popupTimeoutRef = useRef(null);
@@ -367,31 +367,28 @@ export default function ProductCard({ product }) {
   const navigate = useNavigate();
 
   // Start interval on mouse enter
-  const startSlider = () => {
-    if (product.images.length <= 1) return;
-    if (intervalRef.current) clearInterval(intervalRef.current);
 
-    intervalRef.current = setInterval(() => {
-      const newIndex = (imgIndex + 1) % product.images.length;
-      setNextIndex(newIndex);
-      setIsSliding(true);
 
-      setTimeout(() => {
-        setImgIndex(newIndex);
-        setIsSliding(false);
-        setNextIndex(null);
-      }, 300); // duration matches CSS
-    }, 1000);
-  };
 
-  // Reset on mouse leave
-  const stopSlider = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = null;
-    setImgIndex(0);
-    setNextIndex(null);
-    setIsSliding(false);
-  };
+// Start slideshow on hover
+const startSlider = () => {
+  if (!product?.images || product.images.length <= 1) return;
+
+  stopSlider(); // clear old interval if any
+
+  intervalRef.current = setInterval(() => {
+    setImgIndex((prev) => (prev + 1) % product.images.length);
+  }, 1500); // 1.5 seconds per image feels smooth
+};
+
+// Stop and reset on mouse leave
+const stopSlider = () => {
+  if (intervalRef.current) clearInterval(intervalRef.current);
+  intervalRef.current = null;
+  setImgIndex(0);
+};
+
+
 
   // Add to Cart handler
   const handleAddToCart = (e) => {
@@ -428,10 +425,10 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="bg-white rounded-sm shadow-lg hover:shadow-2xl transition-shadow flex flex-col overflow-hidden w-full max-w-xs relative "
+      className="bg-white md:rounded-sm shadow-lg hover:shadow-2xl transition-shadow flex flex-col overflow-hidden w-full max-w-xs relative "
       style={{
         border: `1px solid ${COLORS.accent}`,
-        minHeight: 430, // Adjust as needed
+        minHeight: 360, // Adjust as needed
       }}
     >
       {/* --- POPUP --- */}
@@ -449,97 +446,47 @@ export default function ProductCard({ product }) {
       </div>
       {/* --- IMAGE CONTAINER --- */}
       <div
-        className="relative w-full h-96 overflow-hidden"
-        onMouseEnter={startSlider}
-        onMouseLeave={stopSlider}
-        style={{
-          background: COLORS.accent,
-          cursor: product.images.length > 1 ? "pointer" : "default",
-        }}
-      >
-        {/* Current image */}
-        <img
-          src={currentThumb || "image"}
-          alt={product.name}
-          loading="lazy" // <-- LAZY LOADING
-          className="absolute left-0 top-0 w-full h-full object-cover transition-transform"
-          style={{
-            zIndex: 2,
-            transform: isSliding ? "translateX(-100%)" : "translateX(0)",
-            transition: "transform 0.3s cubic-bezier(.77,0,.18,1)",
-          }}
-          draggable={false}
-        />
-        {/* Next image */}
-        {nextIndex !== null && (
-          <img
-            src={nextThumb}
-            alt={product.name}
-            loading="lazy" // <-- LAZY LOADING
-            className="absolute left-0 top-0 w-full h-full object-cover transition-transform"
-            style={{
-              zIndex: 1,
-              transform: isSliding ? "translateX(0)" : "translateX(100%)",
-              transition: "transform 0.3s cubic-bezier(.77,0,.18,1)",
-            }}
-            draggable={false}
-          />
-        )}
-        {/* Overlays */}
-        {product.isNew && ( // Assuming your product model might have this
-          <span
-            className="absolute top-3 left-3 font-bold text-xs px-3 py-1 rounded-md"
-            style={{
-              color: "#fff",
-              background: COLORS.primary,
-              letterSpacing: "1px",
-              zIndex: 10,
-            }}
-          >
-            NEW
-          </span>
-        )}
-        <div
-          className="absolute bottom-3 left-3 flex items-center gap-2 bg-white/90 rounded px-2 py-1 text-xs font-semibold shadow"
-          style={{ zIndex: 10 }}
-        >
-          <span
-            className="flex items-center gap-1 font-bold"
-            style={{ color: COLORS.primary }}
-          >
-            {product.rating || 4.5}{" "}
-            {/* Add default/placeholder */}
-            <svg
-              xmlns="http://www.w.g/2000/svg"
-              className="inline"
-              width="13"
-              height="13"
-              fill={COLORS.secondary}
-              viewBox="0 0 20 20"
-            >
-              <path d="M10 15.27l5.18 3.73-1.64-6.81L18 7.24l-6.92-.61L10 0 8.92 6.63 2 7.24l4.46 4.95-1.64 6.81z" />
-            </svg>
-          </span>
-          <span className="ml-1 font-normal" style={{ color: COLORS.primary }}>
-            | {product.numReviews || 0}
-          </span>
-        </div>
-      </div>
+  className="relative w-full h-64 md:h-96 overflow-hidden"
+  onMouseEnter={startSlider}
+  onMouseLeave={stopSlider}
+  style={{
+    background: COLORS.accent,
+    cursor: product.images.length > 1 ? "pointer" : "default",
+  }}
+>
+  {product.images.map((img, index) => (
+    <img
+      key={index}
+      src={getCloudinaryThumbnail(img)}
+      alt={product.name}
+      className="absolute left-0 top-0 w-full h-full object-cover transition-all duration-700 ease-in-out"
+      style={{
+        opacity: index === imgIndex ? 1 : 0,
+        transform: `translateX(${index === imgIndex ? "0" : "10%"})`,
+        zIndex: index === imgIndex ? 2 : 1,
+      }}
+      draggable={false}
+      loading="lazy"
+    />
+  ))}
+</div>
+
+   
       {/* --- PRODUCT INFO --- */}
-      <div className="p-2 pb-2 flex flex-col flex-grow">
+      <div className="p-1 md:p-2 pb-1 md:pb-2 flex flex-col flex-grow">
         <h2
-          className="font-semibold text-base truncate" // Truncate for long names
+          className="font-semibold text-sm md:text-base truncate" // Truncate for long names
           style={{ color: COLORS.text }}
         >
           {product.name}
         </h2>
         <div
-          className="text-sm mb-1 text-[#7C6A51] truncate"
+          className="text-xs md:text-sm mb-1 text-[#7C6A51] truncate"
           style={{ color: COLORS.accent }}
         >
           {product.description.substring(0, 50)}...
         </div>
-        <div className="mb-1 flex items-baseline gap-3">
+        <div className="mb-1 flex items-baseline gap-2 md:gap-3">
           <span className="font-bold text-base" style={{ color: COLORS.primary }}>
             Rs. {product.price}
           </span>
@@ -559,7 +506,7 @@ export default function ProductCard({ product }) {
         <div className="mt-auto flex gap-2">
           <button
             onClick={handleAddToCart}
-            className="w-1/2   rounded-lg font-semibold transition text-base"
+            className="w-1/2   rounded-lg font-semibold transition text-xs md:text-base"
             style={{
               border: `1px solid ${COLORS.primary}`,
               color: COLORS.primary,
@@ -578,7 +525,7 @@ export default function ProductCard({ product }) {
           </button>
           <button
             onClick={handleBuyNow}
-            className="w-1/2 px-1 py-2 rounded-lg font-semibold transition text-base"
+            className="w-1/2 px-1 py-2 rounded-lg font-semibold transition text-xs md:text-base"
             style={{
               border: `2px solid ${COLORS.secondary}`,
               color: COLORS.secondary,
