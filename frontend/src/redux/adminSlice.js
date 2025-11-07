@@ -17,8 +17,8 @@ const getAuthConfig = (getState) => ({
 });
 
 // --- API URLs ---
-// const API_URL = 'https://tehzeeb-m4q8.vercel.app/api';
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://tehzeeb-m4q8.vercel.app/api';
+// const API_URL = 'http://localhost:5000/api';
 
 // --- Async Thunk for Fetching All Users ---
 export const fetchUsers = createAsyncThunk(
