@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../redux/adminSlice';
 import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { Link } from 'react-router-dom';        
 
 // Your Brand's Color Theme
 const COLORS = {
@@ -30,9 +31,16 @@ console.log('Error:', error);
       className="min-h-screen p-4 md:p-8"
       style={{ background: COLORS.background }}
     >
-      <div className="max-w-7xl mx-auto xl:max-w-[1440px] 2xl:max-w-[1720px]">
+      <div className="max-w-7xl mx-auto xl:max-w-[1440px] 2xl:max-w-[1720px] ">
+        <Link
+          to="/admin/dashboard"
+          className="inline-block mb-4 text-sm font-semibold"
+          style={{ color: COLORS.accent }}
+        >
+          &larr; Go Back to Admin Dashboard
+        </Link>
         <h1
-          className="text-3xl md:text-4xl font-extrabold mb-8"
+          className="text-lg md:text-4xl font-bold mb-8 text-center"
           style={{ color: COLORS.primary }}
         >
           Manage Users

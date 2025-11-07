@@ -17,7 +17,7 @@ const menu = [
   { name: 'Home', href: '/' },
   { name: 'About Us', href: '/about' },
   { name: 'Shop', href: '/shop' },
-  { name: 'Blog', href: '/Blog' },
+  { name: 'Tehzeeb Journal', href: '/Blog' },
   { name: 'Contact', href: '/contact' },
 ];
 

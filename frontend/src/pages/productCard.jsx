@@ -332,7 +332,8 @@
 
 import React, { useState, useRef, useEffect} from "react";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice"; // Check this path!
+import { addToCart } from "../redux/cartSlice";
+import { setBuyNowItem } from "../redux/cartSlice"; // Check this path!
 import { useNavigate } from "react-router-dom"; // Import for Buy Now
 
 const COLORS = {
@@ -408,11 +409,15 @@ const stopSlider = () => {
   };
 
   // Buy Now handler
-  const handleBuyNow = (e) => {
-    e.stopPropagation();
-    dispatch(addToCart(product));
-    navigate("/cart"); // Redirect to cart
-  };
+const handleBuyNow = (e) => {
+  e.stopPropagation();
+
+  // ✅ Set only this product as Buy Now item
+  dispatch(setBuyNowItem({ ...product, quantity: 1 }));
+
+  // ✅ Go directly to checkout page
+  navigate("/checkout");
+};
 
   // Get compressed thumbnails
   const currentThumb = getCloudinaryThumbnail(product.images[imgIndex]);
@@ -427,7 +432,7 @@ const stopSlider = () => {
     <div
       className="bg-white md:rounded-sm shadow-lg hover:shadow-2xl transition-shadow flex flex-col overflow-hidden w-full max-w-xs relative "
       style={{
-        border: `1px solid ${COLORS.accent}`,
+        // border: `1px solid ${COLORS.accent}`,
         minHeight: 360, // Adjust as needed
       }}
     >

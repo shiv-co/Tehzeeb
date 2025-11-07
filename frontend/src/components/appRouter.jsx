@@ -19,6 +19,8 @@ import AdminRoute from "./adminRoute";
 import UserListPage from "../pages/userListPage";
 import ProductListPage from "../pages/productListPage";
 import ProductEditPage from "../pages/productEditPage";
+import CheckoutPage from "../pages/checkout";
+import AdminManageOrders from "../pages/AdminManageOrders";
 // import ManageProductsScreen from "../pages/manageProductScreen";
 // import ProductEditScreen from "../pages/productEditScreen";
 
@@ -47,12 +49,14 @@ export default function AppRouter() {
         <Route path="/contact" element={<ContactUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/footer" element={<Footer />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="*" element={<NotFound />} />
 
          <Route path="" element={<AdminRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<UserListPage />} />
           <Route path="/admin/products" element={<ProductListPage />} /> 
+             <Route path="/admin/orders" element={<AdminManageOrders />} /> 
           <Route path="/admin/product/:id/edit" element={<ProductEditPage />} />
           <Route path="/admin/product/create" element={<ProductEditPage />} />
 

@@ -65,7 +65,14 @@ export default function ProductListPage() {
       <div className="max-w-7xl mx-auto xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* HEADER SECTION */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold" style={{ color: COLORS.primary }}>
+          <Link
+                    to="/admin/dashboard"
+                    className="inline-block mb-4 text-sm font-semibold"
+                    style={{ color: COLORS.accent }}
+                  >
+                    &larr; Go Back to Admin Dashboard
+                  </Link>
+          <h1 className="text-lg  md:text-4xl font-bold mb-8" style={{ color: COLORS.primary }}>
             Manage Products
           </h1>
 
@@ -100,7 +107,7 @@ export default function ProductListPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead style={{ background: COLORS.background }}>
               <tr>
-                {['ID', 'Name', 'Price', 'Category', 'Brand', 'Actions'].map(
+                {['Image','ID', 'Name', 'Price', 'Quantity', 'Category', 'Brand', 'Actions'].map(
                   (header) => (
                     <th
                       key={header}
@@ -121,6 +128,13 @@ export default function ProductListPage() {
               {products.map((product) => (
                 <tr key={product._id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <img
+                      src={product.images?.[0]}
+                      alt={product.name}
+                      className="w-16 h-16 object-cover rounded-md border border-[#EAD8C0]"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {product._id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -128,6 +142,9 @@ export default function ProductListPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     ₹{product.price.toLocaleString()}
+                  </td>
+                   <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    ₹{product.countInStock.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {product.category}

@@ -71,6 +71,7 @@ import "./config/cloudinary.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 // Middleware
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
@@ -86,7 +87,7 @@ app.use(
     origin: [
       "http://localhost:5173", // Vite local
       "http://localhost:3000", // Create React App local
-      "https://tehzeeb.vercel.app", // frontend deployed site
+      // "https://tehzeeb.vercel.app", // frontend deployed site
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -109,6 +110,8 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/orders", orderRoutes);
+
 
 // ✅ Error handlers
 app.use(notFound);

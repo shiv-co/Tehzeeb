@@ -251,6 +251,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProductById } from '../redux/productsSlice';
 import { addToCart } from '../redux/cartSlice';
+import { setBuyNowItem } from "../redux/cartSlice"; 
 
 const COLORS = {
   primary: '#B3541E',
@@ -282,6 +283,15 @@ export default function ProductDetailsPage() {
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, quantity: Number(qty) }));
     navigate('/cart');
+  };
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+  
+    // ✅ Set only this product as Buy Now item
+    dispatch(setBuyNowItem({ ...product, quantity: 1 }));
+  
+    // ✅ Go directly to checkout page
+    navigate("/checkout");
   };
 
   // 🔥 NEW — close zoom on ESC key
@@ -423,7 +433,7 @@ export default function ProductDetailsPage() {
           </button>
 
           <button
-            onClick={addToCartHandler}
+            onClick={handleBuyNow}
             disabled={product.countInStock === 0}
             className=" w-full py-2 md:py-4 rounded-xl text-base md:text-lg  font-bold text-white shadow-lg transition disabled:opacity-50"
             style={{ background: COLORS.primary }}

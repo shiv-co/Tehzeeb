@@ -1,14 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 // Function to get cart from localStorage
 const getInitialCart = () => {
   try {
-    const cart = localStorage.getItem('cart');
+    const cart = localStorage.getItem("cart");
     if (cart) {
       return JSON.parse(cart);
     }
   } catch (e) {
-    console.error('Failed to parse cart from localStorage', e);
+    console.error("Failed to parse cart from localStorage", e);
   }
   // Return default state if empty or error
   return {
@@ -18,7 +18,10 @@ const getInitialCart = () => {
   };
 };
 
-const initialState = getInitialCart();
+const initialState = {
+  ...getInitialCart(),
+  buyNowItem: null,
+  };
 
 // Helper function to update state and localStorage
 const updateStateAndStorage = (state) => {
@@ -34,11 +37,11 @@ const updateStateAndStorage = (state) => {
   state.cartTotalAmount = totalAmount;
 
   // Save to localStorage
-  localStorage.setItem('cart', JSON.stringify(state));
+  localStorage.setItem("cart", JSON.stringify(state));
 };
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
     // This is the main fix
@@ -74,6 +77,16 @@ const cartSlice = createSlice({
       // Recalculate totals and save to localStorage
       updateStateAndStorage(state);
     },
+ 
+
+
+    setBuyNowItem: (state, action) => {
+      state.buyNowItem = action.payload;
+    },
+
+    clearBuyNowItem: (state) => {
+      state.buyNowItem = null;
+    },
 
     // You can add these later for quantity buttons
     decreaseQuantity(state, action) {
@@ -100,6 +113,10 @@ const cartSlice = createSlice({
       }
       updateStateAndStorage(state);
     },
+    clearCart: (state) => {
+      state.cartItems = [];
+      state.cartTotalAmount = 0;
+    },
   },
 });
 
@@ -108,7 +125,9 @@ export const {
   removeFromCart,
   decreaseQuantity,
   increaseQuantity,
+  clearCart,
+  setBuyNowItem, 
+  clearBuyNowItem, 
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
-

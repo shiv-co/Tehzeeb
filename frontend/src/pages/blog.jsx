@@ -1,6 +1,7 @@
 import React from "react";
-import img1 from "../assets/images/img1.jpg"
+
 import img2 from "../assets/images/img2.jpg"
+import blog_img1 from "../assets/images/blog_img1.png"
 
 // Your Brand's Color Theme (copied from AboutPage)
 const COLORS = {
@@ -13,18 +14,18 @@ const COLORS = {
 
 // Dummy Data for Blogs
 const mainBlog = {
-  title: "Exploring Sustainable Fashion: Our Commitment", // Adjusted title
+  title: "The Timeless Art of Chikankari: A Legacy Woven in Threads", // Adjusted title
   description:
-    "Discover Tehzeeb's journey towards sustainable practices. Learn about the materials we use and our vision for a greener future in fashion.", // Adjusted description
+    "Few crafts speak the language of grace like Chikankari the delicate hand embroidery born in the heart of Lucknow. At Tehzeeb Creations, we celebrate this centuries-old art form that continues to enchant fashion lovers across the world. Each Chikankari piece tells a story a tale of patience, precision, and passion. Crafted using fine muslin, cotton, or georgette, artisans skillfully weave floral motifs using stitches like bakhiya, phanda, and keel kangan.The result? A fabric so soft and royal that it feels like poetry on skin. Unlike machine embroidery, true Chikankari retains its subtle imperfections the mark of human artistry.", // Adjusted description
   author: {
     name: "Ananya Sharma", // Adjusted author
     role: "Sustainability Lead",
-    avatar: img1, // Assuming img1 is appropriate
+    avatar: blog_img1, // Assuming img1 is appropriate
   },
   tags: ["Sustainability", "Ethical Fashion"], // Adjusted tags
   date: "October 28, 2025", // Adjusted date
   readTime: "6 min",
-  image: img1,
+  image: blog_img1,
 };
 
 const trending = {
@@ -55,7 +56,7 @@ const sideBlogs = [
     date: "Jul 10, 2025", // Adjusted date
     readTime: "4 min",
     tag: "Design Process", // Adjusted tag
-    image: img1,
+    image: blog_img1,
   },
 ];
 
@@ -67,18 +68,18 @@ export default function BlogPage() {
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 xl:max-w-[1440px] 2xl:max-w-[1720px]">
         {/* Main Featured Blog */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-[#A5A58D]">
+          <div className="bg-white  rounded-lg md:rounded-2xl shadow-lg overflow-hidden border border-[#A5A58D]">
             <img
               src={mainBlog.image}
               alt={mainBlog.title}
-              className="w-full h-96 object-cover"
+              className="w-full h-96 object-cover object-top"
               style={{ background: "#A5A58D" }}
             />
-            <div className="p-8">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-[#3E2F1C] mb-4">
+            <div className="p-2 md:p-8">
+              <h1 className="text-lg md:text-4xl font-semibold md:font-extrabold text-[#3E2F1C] mb-4">
                 {mainBlog.title}
               </h1>
-              <p className="text-lg text-[#3E2F1C] mb-6">{mainBlog.description}</p>
+              <p className="text-sm md:text-lg text-justify text-[#3E2F1C] mb-6">{mainBlog.description}</p>
               <div className="flex items-center gap-3 flex-wrap">
                 {/* Author Avatar & Info */}
                 <div className="flex items-center gap-2">

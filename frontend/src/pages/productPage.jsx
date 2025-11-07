@@ -94,6 +94,10 @@ export default function ProductsPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, []);
+
   // 4. HANDLE LOADING AND ERROR STATES
   if (loading === "pending") {
     return (
@@ -123,11 +127,11 @@ export default function ProductsPage() {
 
   return (
     <div
-      className="min-h-screen py-8 px-2 md:px-8 transition-opacity duration-1000"
+      className="min-h-screen py-2 md:py-8 px-2 md:px-8 transition-opacity duration-1000"
       style={{ background: COLORS.background, opacity: show ? 1 : 0 }}
     >
       <h1
-        className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-tight"
+        className="text-xl md:text-4xl font-extrabold text-center mb-2 md:mb-10 tracking-tight"
         style={{ color: COLORS.primary }}
       >
         Shop Our Collection
