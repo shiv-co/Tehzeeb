@@ -144,7 +144,7 @@ export default function ProductListPage() {
                     ₹{product.price.toLocaleString()}
                   </td>
                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    ₹{product.countInStock.toLocaleString()}
+                    {product.countInStock.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {product.category}
