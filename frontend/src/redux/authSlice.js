@@ -25,8 +25,8 @@ export const register = createAsyncThunk(
 
       // Use your deployed URL
       const { data } = await axios.post(
-        'http://localhost:5000/api/users/register',
-        // 'https://tehzeeb.onrender.com/api/users/profile',
+        // 'http://localhost:5000/api/users/register',
+        'https://tehzeeb.onrender.com/api/users/profile',
         // 'https://tehzeeb-m4q8.vercel.app/api/users/register',
         { name, email, password },
         config
@@ -57,8 +57,8 @@ export const login = createAsyncThunk(
 
       // Use your deployed URL
       const { data } = await axios.post(
-        'http://localhost:5000/api/users/login',
-        // 'https://tehzeeb.onrender.com/api/users/profile',
+        // 'http://localhost:5000/api/users/login',
+        'https://tehzeeb.onrender.com/api/users/profile',
         // 'https://tehzeeb-m4q8.vercel.app/api/users/login',
         { email, password },
         config
@@ -96,8 +96,8 @@ export const updateUserProfile = createAsyncThunk(
 
       // Make PUT request to the protected profile route
       const { data } = await axios.put(
-        'http://localhost:5000/api/users/profile',
-        // 'https://tehzeeb.onrender.com/api/users/profile',
+        // 'http://localhost:5000/api/users/profile',
+        'https://tehzeeb.onrender.com/api/users/profile',
         // 'https://tehzeeb-m4q8.vercel.app/api/users/profile', // Use your deployed URL
         userData, // Send the user data (name, email, phone, gender)
         config
