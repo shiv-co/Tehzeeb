@@ -86,8 +86,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // Vite local
-      "http://localhost:3000", // Create React App local
-      // "https://tehzeeb.vercel.app", // frontend deployed site
+      
+      "https://www.tehzeebcreations.in", // frontend deployed site
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
