@@ -95,6 +95,17 @@ app.use(
   })
 );
 
+// app.js or server.js
+app.use((req, res, next) => {
+  if (req.url.match(/\.(js|css|png|jpg|jpeg|svg|gif)$/)) {
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  } else {
+    res.setHeader("Cache-Control", "no-cache");
+  }
+  next();
+});
+
+
 // ✅ Handle OPTIONS requests (important for preflight)
 
 

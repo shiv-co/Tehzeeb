@@ -252,6 +252,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProductById } from '../redux/productsSlice';
 import { addToCart } from '../redux/cartSlice';
 import { setBuyNowItem } from "../redux/cartSlice"; 
+import ProductDetailsSkeleton from '../components/ProductDetailsSkeleton.jsx';
 
 const COLORS = {
   primary: '#B3541E',
@@ -305,9 +306,7 @@ export default function ProductDetailsPage() {
 
   if (loading === 'pending' || loading === 'idle') {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: COLORS.background }}>
-        <div className="text-2xl font-semibold" style={{ color: COLORS.primary }}>Loading...</div>
-      </div>
+      <ProductDetailsSkeleton />
     );
   }
 

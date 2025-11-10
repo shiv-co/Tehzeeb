@@ -55,13 +55,12 @@
 //   );
 // }
 
-
-
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../pages/productCard.jsx";
-import { fetchProducts } from "../redux/productsSlice.js"; // <-- 1. IMPORT THUNK
+import { fetchProducts } from "../redux/productsSlice.js";
+import SkeletonCard from "../components/SkeletonCard";
 
 const COLORS = {
   primary: "#B3541E",
@@ -95,19 +94,25 @@ export default function ProductsPage() {
   }, []);
 
   useEffect(() => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}, []);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   // 4. HANDLE LOADING AND ERROR STATES
   if (loading === "pending") {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: COLORS.background }}
-      >
-        <div className="text-2xl font-semibold" style={{ color: COLORS.primary }}>
-          Loading Our Collection...
-        </div>
+      // <div
+      //   className="min-h-screen flex items-center justify-center"
+      //   style={{ background: COLORS.background }}
+      // >
+      //   <div className="text-2xl font-semibold" style={{ color: COLORS.primary }}>
+      //     Loading Our Collection...
+      //   </div>
+      // </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:gap-x-10  md:gap-y-12 place-items-center md:mx-10">
+        {[...Array(16)].map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
       </div>
     );
   }
@@ -151,4 +156,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
