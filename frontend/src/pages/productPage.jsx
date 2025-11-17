@@ -139,7 +139,7 @@ export default function ProductsPage() {
         className="text-xl md:text-4xl font-extrabold text-center mb-2 md:mb-10 tracking-tight"
         style={{ color: COLORS.primary }}
       >
-        Shop Our Collection
+        Our Latest Collection
       </h1>
       {/* 5. MAP OVER REAL PRODUCTS */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:gap-x-10  md:gap-y-12 place-items-center md:mx-10">

@@ -316,25 +316,12 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 import { setBuyNowItem } from "../redux/cartSlice"; // Check this path!
 import { useNavigate } from "react-router-dom"; // Import for Buy Now
+import WhatsappPage from "../components/whatsapp";
 
 const COLORS = {
   primary: "#B3541E",
@@ -369,27 +356,23 @@ export default function ProductCard({ product }) {
 
   // Start interval on mouse enter
 
+  // Start slideshow on hover
+  const startSlider = () => {
+    if (!product?.images || product.images.length <= 1) return;
 
+    stopSlider(); // clear old interval if any
 
-// Start slideshow on hover
-const startSlider = () => {
-  if (!product?.images || product.images.length <= 1) return;
+    intervalRef.current = setInterval(() => {
+      setImgIndex((prev) => (prev + 1) % product.images.length);
+    }, 1500); // 1.5 seconds per image feels smooth
+  };
 
-  stopSlider(); // clear old interval if any
-
-  intervalRef.current = setInterval(() => {
-    setImgIndex((prev) => (prev + 1) % product.images.length);
-  }, 1500); // 1.5 seconds per image feels smooth
-};
-
-// Stop and reset on mouse leave
-const stopSlider = () => {
-  if (intervalRef.current) clearInterval(intervalRef.current);
-  intervalRef.current = null;
-  setImgIndex(0);
-};
-
-
+  // Stop and reset on mouse leave
+  const stopSlider = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    setImgIndex(0);
+  };
 
   // Add to Cart handler
   const handleAddToCart = (e) => {
@@ -409,15 +392,15 @@ const stopSlider = () => {
   };
 
   // Buy Now handler
-const handleBuyNow = (e) => {
-  e.stopPropagation();
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
 
-  // ✅ Set only this product as Buy Now item
-  dispatch(setBuyNowItem({ ...product, quantity: 1 }));
+    // ✅ Set only this product as Buy Now item
+    dispatch(setBuyNowItem({ ...product, quantity: 1 }));
 
-  // ✅ Go directly to checkout page
-  navigate("/checkout");
-};
+    // ✅ Go directly to checkout page
+    navigate("/checkout");
+  };
 
   // Get compressed thumbnails
   const currentThumb = getCloudinaryThumbnail(product.images[imgIndex]);
@@ -425,8 +408,8 @@ const handleBuyNow = (e) => {
     nextIndex !== null
       ? getCloudinaryThumbnail(product.images[nextIndex])
       : null;
-  console.log(currentThumb)
-  console.log(nextThumb)
+  console.log(currentThumb);
+  console.log(nextThumb);
 
   return (
     <div
@@ -451,32 +434,31 @@ const handleBuyNow = (e) => {
       </div>
       {/* --- IMAGE CONTAINER --- */}
       <div
-  className="relative w-full h-64 md:h-96 overflow-hidden"
-  onMouseEnter={startSlider}
-  onMouseLeave={stopSlider}
-  style={{
-    background: COLORS.accent,
-    cursor: product.images.length > 1 ? "pointer" : "default",
-  }}
->
-  {product.images.map((img, index) => (
-    <img
-      key={index}
-      src={getCloudinaryThumbnail(img)}
-      alt={product.name}
-      className="absolute left-0 top-0 w-full h-full object-cover transition-all duration-700 ease-in-out"
-      style={{
-        opacity: index === imgIndex ? 1 : 0,
-        transform: `translateX(${index === imgIndex ? "0" : "10%"})`,
-        zIndex: index === imgIndex ? 2 : 1,
-      }}
-      draggable={false}
-      loading="lazy"
-    />
-  ))}
-</div>
+        className="relative w-full h-64 md:h-96 overflow-hidden"
+        onMouseEnter={startSlider}
+        onMouseLeave={stopSlider}
+        style={{
+          background: COLORS.accent,
+          cursor: product.images.length > 1 ? "pointer" : "default",
+        }}
+      >
+        {product.images.map((img, index) => (
+          <img
+            key={index}
+            src={getCloudinaryThumbnail(img)}
+            alt={product.name}
+            className="absolute left-0 top-0 w-full h-full object-cover transition-all duration-700 ease-in-out"
+            style={{
+              opacity: index === imgIndex ? 1 : 0,
+              transform: `translateX(${index === imgIndex ? "0" : "10%"})`,
+              zIndex: index === imgIndex ? 2 : 1,
+            }}
+            draggable={false}
+            loading="lazy"
+          />
+        ))}
+      </div>
 
-   
       {/* --- PRODUCT INFO --- */}
       <div className="p-1 md:p-2 pb-1 md:pb-2 flex flex-col flex-grow">
         <h2
@@ -492,7 +474,10 @@ const handleBuyNow = (e) => {
           {product.description.substring(0, 50)}...
         </div>
         <div className="mb-1 flex items-baseline gap-2 md:gap-3">
-          <span className="font-bold text-base" style={{ color: COLORS.primary }}>
+          <span
+            className="font-bold text-base"
+            style={{ color: COLORS.primary }}
+          >
             Rs. {product.price}
           </span>
           {product.originalPrice && (
@@ -549,8 +534,7 @@ const handleBuyNow = (e) => {
           </button>
         </div>
       </div>
+      <WhatsappPage />
     </div>
   );
 }
-
-

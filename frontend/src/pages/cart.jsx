@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import RecommendedProducts from "../pages/recommendedProducts.jsx";
+import WhatsappPage from "../components/whatsapp.jsx";
 
 const COLORS = {
   primary: "#B3541E",
@@ -175,6 +176,8 @@ export default function CartPage() {
         </div>
       )}
       <RecommendedProducts cartItems={cartItems} />
+      <WhatsappPage/>
+      
     </div>
   );
 }

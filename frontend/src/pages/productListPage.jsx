@@ -1,26 +1,28 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
-import { fetchProducts } from '../redux/productsSlice';
-import { createProduct, deleteProduct } from '../redux/adminSlice';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
+import { fetchProducts } from "../redux/productsSlice";
+import { createProduct, deleteProduct } from "../redux/adminSlice";
 
-// Brand Color Palette
 const COLORS = {
-  primary: '#B3541E',
-  secondary: '#D6A74F',
-  accent: '#A5A58D',
-  text: '#3E2F1C',
-  background: '#F5EBDD',
+  primary: "#B3541E",
+  secondary: "#D6A74F",
+  accent: "#A5A58D",
+  text: "#3E2F1C",
+  background: "#F5EBDD",
 };
 
 export default function ProductListPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { items: products, loading, error } = useSelector(
-    (state) => state.products
-  );
+  const {
+    items: products,
+    loading,
+    error,
+  } = useSelector((state) => state.products);
+
   const {
     productDeleteLoading,
     productCreateLoading,
@@ -31,28 +33,24 @@ export default function ProductListPage() {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // Delete Product Handler
+  // Delete Handler
   const deleteHandler = (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       dispatch(deleteProduct(id))
         .unwrap()
-        .then(() => {
-          dispatch(fetchProducts());
-        })
-        .catch((err) => console.error('Failed to delete product: ', err));
+        .then(() => dispatch(fetchProducts()))
+        .catch((err) => console.log(err));
     }
   };
 
-  // Create Product Handler
+  // Create Handler
   const createHandler = async () => {
-    if (window.confirm('Do you want to create a new blank product?')) {
+    if (window.confirm("Create a new blank product?")) {
       try {
         const newProduct = await dispatch(createProduct()).unwrap();
-        // Navigate to Edit Page for the newly created product
         navigate(`/admin/product/${newProduct._id}/edit`);
-      } catch (error) {
-        console.error('Failed to create product:', error);
-        alert('Error creating product. Please try again.');
+      } catch (e) {
+        alert("Error creating product");
       }
     }
   };
@@ -62,120 +60,155 @@ export default function ProductListPage() {
       className="min-h-screen p-4 md:p-8"
       style={{ background: COLORS.background }}
     >
-      <div className="max-w-7xl mx-auto xl:max-w-[1440px] 2xl:max-w-[1720px]">
-        {/* HEADER SECTION */}
+      <div className="max-w-7xl mx-auto">
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <Link
-                    to="/admin/dashboard"
-                    className="inline-block mb-4 text-sm font-semibold"
-                    style={{ color: COLORS.accent }}
-                  >
-                    &larr; Go Back to Admin Dashboard
-                  </Link>
-          <h1 className="text-lg  md:text-4xl font-bold mb-8" style={{ color: COLORS.primary }}>
+            to="/admin/dashboard"
+            className="inline-block mb-4 text-sm font-semibold"
+            style={{ color: COLORS.accent }}
+          >
+            ← Go Back
+          </Link>
+
+          <h1 className="text-3xl font-bold" style={{ color: COLORS.primary }}>
             Manage Products
           </h1>
 
           <button
             onClick={createHandler}
             disabled={productCreateLoading}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition-all duration-300"
-            style={{
-              background: COLORS.primary,
-              boxShadow: '0 4px 6px rgba(0,0,0,0.15)',
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.background = COLORS.secondary)
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.background = COLORS.primary)
-            }
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition"
+            style={{ background: COLORS.primary }}
           >
             <FiPlus size={18} />
-            {productCreateLoading ? 'Creating...' : 'Create Product'}
+            {productCreateLoading ? "Creating..." : "Create Product"}
           </button>
         </div>
 
-        {/* STATUS MESSAGES */}
-        {loading === 'pending' && <p>Loading products...</p>}
-        {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-        {adminError && <p style={{ color: 'red' }}>Admin Error: {adminError}</p>}
-        {productDeleteLoading && <p>Deleting product...</p>}
+        {/* Errors */}
+        {loading === "pending" && <p>Loading products...</p>}
+        {error && <p className="text-red-600">Error: {error}</p>}
+        {adminError && (
+          <p className="text-red-600">Admin Error: {adminError}</p>
+        )}
 
-        {/* PRODUCTS TABLE */}
+        {/* TABLE */}
         <div className="bg-white rounded-xl shadow-lg overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-300">
             <thead style={{ background: COLORS.background }}>
               <tr>
-                {['Image','ID', 'Name', 'Price', 'Quantity', 'Category', 'Brand', 'Actions'].map(
-                  (header) => (
-                    <th
-                      key={header}
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                      style={{ color: COLORS.text }}
-                    >
-                      {header}
-                    </th>
-                  )
-                )}
+                {[
+                  "Image",
+                  "Name",
+                  "Price",
+                  "Original",
+                  "Discount",
+                  "Rating",
+                  "Stock",
+                  "Category",
+                  "Brand",
+                  "Colors",
+                  "Sizes",
+                  "New?",
+                  "Actions",
+                ].map((header) => (
+                  <th
+                    key={header}
+                    className="px-4 py-3 text-left text-xs font-semibold uppercase"
+                    style={{ color: COLORS.text }}
+                  >
+                    {header}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody
-              className="bg-white divide-y divide-gray-200"
-              style={{ color: COLORS.text }}
-            >
+
+            <tbody className="divide-y divide-gray-200">
               {products.map((product) => (
                 <tr key={product._id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {/* IMAGE */}
+                  <td className="px-4 py-3">
                     <img
                       src={product.images?.[0]}
                       alt={product.name}
-                      className="w-16 h-16 object-cover rounded-md border border-[#EAD8C0]"
+                      className="w-16 h-16 object-cover rounded-md border"
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {product._id}
+
+                  {/* NAME */}
+                  <td className="px-4 py-3 font-semibold">{product.name}</td>
+
+                  {/* PRICE */}
+                  <td className="px-4 py-3 font-bold text-green-700">
+                    ₹{product.price}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {product.name}
+
+                  {/* ORIGINAL PRICE */}
+                  <td className="px-4 py-3 line-through text-gray-500">
+                    {product.originalPrice ? `₹${product.originalPrice}` : "-"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    ₹{product.price.toLocaleString()}
+
+                  {/* DISCOUNT */}
+                  <td className="px-4 py-3 font-semibold text-red-600">
+                    {product.originalPrice && product.price
+                      ? `${Math.round(
+                          ((product.originalPrice - product.price) /
+                            product.originalPrice) *
+                            100
+                        )}%`
+                      : "-"}
                   </td>
-                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {product.countInStock.toLocaleString()}
+
+                  {/* RATING */}
+                  <td className="px-4 py-3">⭐ {product.rating || 0}</td>
+
+                  {/* STOCK */}
+                  <td className="px-4 py-3">{product.countInStock}</td>
+
+                  {/* CATEGORY */}
+                  <td className="px-4 py-3">{product.category}</td>
+
+                  {/* BRAND */}
+                  <td className="px-4 py-3">{product.brand}</td>
+
+                  {/* COLORS */}
+                  <td className="px-4 py-3 text-xs">
+                    {product.colors?.length
+                      ? product.colors.join(", ")
+                      : "-"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {product.category}
+
+                  {/* SIZES */}
+                  <td className="px-4 py-3 text-xs">
+                    {product.sizes?.length
+                      ? product.sizes.join(", ")
+                      : "-"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {product.brand}
+
+                  {/* NEW BADGE */}
+                  <td className="px-4 py-3">
+                    {product.isNew ? (
+                      <span className="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-md">
+                        NEW
+                      </span>
+                    ) : (
+                      "-"
+                    )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+
+                  {/* ACTION BUTTONS */}
+                  <td className="px-4 py-3 flex gap-3">
                     <Link
                       to={`/admin/product/${product._id}/edit`}
-                      className="inline-flex items-center p-2 rounded-md transition"
-                      style={{ color: COLORS.primary }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.background = COLORS.background)
-                      }
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.background = 'transparent')
-                      }
+                      className="text-blue-600 hover:text-blue-800"
                     >
                       <FiEdit size={18} />
                     </Link>
+
                     <button
                       onClick={() => deleteHandler(product._id)}
-                      className="inline-flex items-center p-2 rounded-md transition"
-                      style={{ color: COLORS.secondary }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.background = COLORS.background)
-                      }
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.background = 'transparent')
-                      }
+                      className="text-red-600 hover:text-red-800"
                     >
                       <FiTrash2 size={18} />
                     </button>

@@ -1,29 +1,30 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { data } from 'react-router-dom';
+// adminSlice.js
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-// Get user info from auth state to include token
+// ---------------- GET TOKEN ----------------
 const getToken = (getState) => {
   const { userInfo } = getState().auth;
   return userInfo ? userInfo.token : null;
 };
 
-// Helper function to create auth config
+// -------------- AUTH HEADERS ---------------
 const getAuthConfig = (getState) => ({
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     Authorization: `Bearer ${getToken(getState)}`,
   },
 });
 
-// --- API URLs ---
-// const API_URL = 'https://tehzeeb-m4q8.vercel.app/api';
-const API_URL = 'https://tehzeeb.onrender.com/api';
-// const API_URL = 'http://localhost:5000/api';
+// ---------------- API URL ------------------
+const API_URL = "https://tehzeeb.onrender.com/api";
+// const API_URL = "http://localhost:5000/api";
 
-// --- Async Thunk for Fetching All Users ---
+// -------------------------------------------------
+//                FETCH USERS (ADMIN)
+// -------------------------------------------------
 export const fetchUsers = createAsyncThunk(
-  'admin/fetchUsers',
+  "admin/fetchUsers",
   async (_, { rejectWithValue, getState }) => {
     try {
       const { data } = await axios.get(
@@ -32,74 +33,81 @@ export const fetchUsers = createAsyncThunk(
       );
       return data;
     } catch (error) {
-      const message =
-        error.response?.data?.message || error.message;
-      return rejectWithValue(message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
-// --- NEW: Async Thunk for Creating a Product ---
-// --- NEW: Async Thunk for Creating a Product ---
+// -------------------------------------------------
+//                CREATE PRODUCT
+// -------------------------------------------------
 export const createProduct = createAsyncThunk(
-  'admin/createProduct',
+  "admin/createProduct",
   async (_, { getState, rejectWithValue }) => {
     try {
       const config = getAuthConfig(getState);
 
-      // Send a default product with all required fields
+      // Default empty product with NEW FIELDS
       const defaultProduct = {
-        name: 'New Ethnic Wear',
+        name: "New Product",
         price: 0,
-        description: 'Add a detailed description for this product',
-        brand: 'Tehzeeb Creations',
-        category: 'Women Ethnic Wear',
+        originalPrice: 0,
+        description: "Add product description",
+        brand: "Brand",
+        category: "Ethnic Wear",
         countInStock: 0,
-        images: [], // You can upload images later from edit page
+        images: [],
+        rating: 0,
+        reviews: 0,
+        isNew: false,
+        colors: [],
+        sizes: [],
       };
 
-      const { data } = await axios.post(`${API_URL}/products`, defaultProduct, config);
-      console.log('Product created:', data);
+      const { data } = await axios.post(
+        `${API_URL}/products`,
+        defaultProduct,
+        config
+      );
 
       return data;
     } catch (error) {
-      const message = error.response?.data?.message || error.message;
-      console.error('Failed to create product:', message);
-      return rejectWithValue(message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
-
-// --- NEW: Async Thunk for Deleting a Product ---
+// -------------------------------------------------
+//                DELETE PRODUCT
+// -------------------------------------------------
 export const deleteProduct = createAsyncThunk(
-  'admin/deleteProduct',
+  "admin/deleteProduct",
   async (productId, { getState, rejectWithValue }) => {
     try {
       await axios.delete(
         `${API_URL}/products/${productId}`,
         getAuthConfig(getState)
       );
-      return productId; // Return the ID of the deleted product
+      return productId;
     } catch (error) {
-      const message =
-        error.response?.data?.message || error.message;
-      return rejectWithValue(message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
-// --- NEW: Async Thunk for Updating a Product ---
+// -------------------------------------------------
+//                UPDATE PRODUCT  (FIXED)
+// -------------------------------------------------
 export const updateProduct = createAsyncThunk(
-  'admin/updateProduct',
-  async (productData, { getState, rejectWithValue }) => {
+  "admin/updateProduct",
+  async ({ id, updatedData }, { getState, rejectWithValue }) => {
     try {
       const { data } = await axios.put(
-        `${API_URL}/products/${productData._id}`,
-        productData,
+        `${API_URL}/products/${id}`,
+        updatedData,
         getAuthConfig(getState)
       );
-      console.log(data)
+
       return data;
     } catch (error) {
       const message =
@@ -109,86 +117,72 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
-// --- NEW: Async Thunk for Uploading Product Images ---
+
+// -------------------------------------------------
+//                UPLOAD IMAGES
+// -------------------------------------------------
 export const uploadProductImages = createAsyncThunk(
-  'admin/uploadProductImages',
+  "admin/uploadProductImages",
   async (formData, { getState, rejectWithValue }) => {
-    // We use 'Content-Type': 'multipart/form-data' for file uploads
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${getToken(getState)}`,
-      },
-    };
     try {
-      const { data } = await axios.post(
-        `${API_URL}/upload`,
-        formData,
-        config
-      );
-      return data.images; // Returns an array of Cloudinary URLs
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${getToken(getState)}`,
+        },
+      };
+
+      const { data } = await axios.post(`${API_URL}/upload`, formData, config);
+
+      return data.images; // Array of Cloudinary URLs
     } catch (error) {
-      const message =
-        error.response?.data?.message || error.message;
-      return rejectWithValue(message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
-// Define the initial state
+// -------------------------------------------------
+//                       SLICE
+// -------------------------------------------------
 const initialState = {
   users: [],
-  userListLoading: 'idle',
+  userListLoading: "idle",
   userListError: null,
 
-  // NEW: States for product management
+  // Product states
   productDeleteLoading: false,
   productCreateLoading: false,
-  productUpdateLoading: false, // <-- NEW
-  imageUploadLoading: false, // <-- NEW
-  loading: false,
+  productUpdateLoading: false,
+  imageUploadLoading: false,
   error: null,
 };
 
 const adminSlice = createSlice({
-  name: 'admin',
+  name: "admin",
   initialState,
   reducers: {
-    // Reducer to clear errors if needed
     clearAdminError(state) {
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Cases for fetchUsers
+
+      // FETCH USERS
       .addCase(fetchUsers.pending, (state) => {
-        state.userListLoading = 'pending';
+        state.userListLoading = "pending";
         state.userListError = null;
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.userListLoading = 'succeeded';
+        state.userListLoading = "succeeded";
         state.users = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
-        state.userListLoading = 'failed';
+        state.userListLoading = "failed";
         state.userListError = action.payload;
       })
 
-      // --- NEW: Cases for Delete Product ---
-      .addCase(deleteProduct.pending, (state) => {
-        state.productDeleteLoading = true;
-      })
-      .addCase(deleteProduct.fulfilled, (state) => {
-        state.productDeleteLoading = false;
-        // Note: We refresh the list from the component
-      })
-      .addCase(deleteProduct.rejected, (state, action) => {
-        state.productDeleteLoading = false;
-        state.error = action.payload;
-      })
-      
-      // --- NEW: Cases for Create Product ---
+      // CREATE PRODUCT
       .addCase(createProduct.pending, (state) => {
         state.productCreateLoading = true;
       })
@@ -200,7 +194,19 @@ const adminSlice = createSlice({
         state.error = action.payload;
       })
 
-      // --- NEW: Cases for Update Product ---
+      // DELETE PRODUCT
+      .addCase(deleteProduct.pending, (state) => {
+        state.productDeleteLoading = true;
+      })
+      .addCase(deleteProduct.fulfilled, (state) => {
+        state.productDeleteLoading = false;
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.productDeleteLoading = false;
+        state.error = action.payload;
+      })
+
+      // UPDATE PRODUCT (FIXED)
       .addCase(updateProduct.pending, (state) => {
         state.productUpdateLoading = true;
       })
@@ -212,7 +218,7 @@ const adminSlice = createSlice({
         state.error = action.payload;
       })
 
-      // --- NEW: Cases for Image Upload ---
+      // UPLOAD PRODUCT IMAGES
       .addCase(uploadProductImages.pending, (state) => {
         state.imageUploadLoading = true;
       })
@@ -228,4 +234,3 @@ const adminSlice = createSlice({
 
 export const { clearAdminError } = adminSlice.actions;
 export default adminSlice.reducer;
-

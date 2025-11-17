@@ -21,6 +21,7 @@ import ProductListPage from "../pages/productListPage";
 import ProductEditPage from "../pages/productEditPage";
 import CheckoutPage from "../pages/checkout";
 import AdminManageOrders from "../pages/AdminManageOrders";
+import ScrollToTop from "./ScrollToTop";
 // import ManageProductsScreen from "../pages/manageProductScreen";
 // import ProductEditScreen from "../pages/productEditScreen";
 
@@ -37,6 +38,7 @@ export default function AppRouter() {
   return (
     <Router>
       <Navbar />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ProductsPage />} />

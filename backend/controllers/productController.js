@@ -5,7 +5,6 @@ import Product from '../models/productModel.js';
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  // .find({}) gets all products
   const products = await Product.find({});
   res.json(products);
 });
@@ -16,21 +15,18 @@ const getProducts = asyncHandler(async (req, res) => {
 const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
-  if (product) {
-    res.json(product);
-  } else {
-    // We use the error middleware
+  if (!product) {
     res.status(404);
     throw new Error('Product not found');
   }
+
+  res.json(product);
 });
 
 // @desc    Create a new product
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  // We get all the product data from the request body
-  // This includes the 'images' array you send from Postman
   const {
     name,
     price,
@@ -39,79 +35,109 @@ const createProduct = asyncHandler(async (req, res) => {
     brand,
     category,
     countInStock,
+    originalPrice,
+    discount,
+    rating,
+    reviews,
+    isNew,
+    // attributes,
+    colors,
+    sizes,
   } = req.body;
 
-  // We create a new product instance
   const product = new Product({
-    name: name,
-    price: price,
-    user: req.user._id, // Get the admin user's ID from the 'protect' middleware
-    images: images, // <-- This is the crucial line
-    brand: brand,
-    category: category,
-    countInStock: countInStock,
-    numReviews: 0,
-    description: description,
+    user: req.user._id,
+    name,
+    price,
+    description,
+    images,
+    brand,
+    category,
+    countInStock,
+
+    // NEW FIELDS
+    originalPrice,
+    discount,
+    rating,
+    reviews,
+    isNew,
+    // attributes,
+    colors,
+    sizes,
   });
 
-  // Save the new product to the database
   const createdProduct = await product.save();
-
-  // Send a 201 'Created' status and the new product back
   res.status(201).json(createdProduct);
 });
 
-// --- NEW ADMIN FUNCTION: UPDATE PRODUCT ---
+// @desc    Update a product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
 // @desc    Update a product
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  // Extract fields from request body
   const {
     name,
     price,
+    originalPrice,
     description,
     images,
     brand,
     category,
     countInStock,
+    rating,
+    reviews,
+    isNew,
+    colors,
+    sizes,
   } = req.body;
 
-  const product = await Product.findById(req.params.id);
+  // Update only if provided
+  product.name = name ?? product.name;
+  product.price = price ?? product.price;
+  product.originalPrice = originalPrice ?? product.originalPrice;
+  product.description = description ?? product.description;
+  product.images = images ?? product.images;
+  product.brand = brand ?? product.brand;
+  product.category = category ?? product.category;
+  product.countInStock = countInStock ?? product.countInStock;
 
-  if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.images = images;
-    product.brand = brand;
-    product.category = category;
-    product.countInStock = countInStock;
+  // NEW FIELDS (MUST MATCH MODEL)
+  product.rating = rating ?? product.rating;
+  product.reviews = reviews ?? product.reviews;
+  product.isNew = isNew ?? product.isNew;
+  product.colors = colors ?? product.colors;
+  product.sizes = sizes ?? product.sizes;
 
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
-  } else {
-    res.status(404);
-    throw new Error('Product not found');
-  }
+  const updatedProduct = await product.save();
+  res.json(updatedProduct);
 });
 
-// --- NEW ADMIN FUNCTION: DELETE PRODUCT ---
+
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
-  if (product) {
-    await Product.deleteOne({ _id: product._id });
-    res.json({ message: 'Product removed' });
-  } else {
+  if (!product) {
     res.status(404);
     throw new Error('Product not found');
   }
+
+  await Product.deleteOne({ _id: req.params.id });
+  res.json({ message: 'Product removed' });
 });
 
-// --- UPDATED EXPORTS ---
 export {
   getProducts,
   getProductById,
@@ -119,4 +145,3 @@ export {
   updateProduct,
   deleteProduct,
 };
-

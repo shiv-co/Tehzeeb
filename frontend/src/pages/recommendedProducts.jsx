@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const COLORS = {
@@ -11,151 +12,206 @@ const COLORS = {
   background: "#F5EBDD",
 };
 
+/* 🎯 Cloudinary thumbnail generator */
+function getCloudinaryThumbnail(url) {
+  if (!url || !url.includes("/upload/")) return url;
+  const parts = url.split("/upload/");
+  return `${parts[0]}/upload/w_400,q_auto:good/${parts[1]}`;
+}
+
 export default function RecommendedProducts({ cartItems }) {
   const { items: allProducts } = useSelector((state) => state.products);
+
   const [recommended, setRecommended] = useState([]);
   const [isFallback, setIsFallback] = useState(false);
-  const carouselRef = useRef();
 
+  const scrollRef = useRef(null);
+  const navigate = useNavigate();
+
+  /* Auto-generate recommended items */
   useEffect(() => {
     if (!allProducts?.length) return;
 
     if (!cartItems?.length) {
-      // Show popular picks when cart is empty
       const popular = allProducts.slice(-6).reverse();
       setRecommended(popular);
       setIsFallback(true);
       return;
     }
 
-    // Get categories safely
-    const cartCategories = [
+    const cartCats = [
       ...new Set(
         cartItems
-          .map((item) => item.category?.toLowerCase?.().trim())
+          .map((i) => i.category?.toLowerCase?.().trim())
           .filter(Boolean)
       ),
     ];
 
-    // Filter similar products
     const filtered = allProducts.filter(
       (p) =>
         p.category &&
-        cartCategories.some((cat) => {
-          const prodCat = p.category?.toLowerCase?.();
-          if (!prodCat || !cat) return false;
-          return prodCat.includes(cat.split(" ")[0]);
-        }) &&
-        !cartItems.some((item) => item._id === p._id)
-    );
-
-    // Cross-category (bonus) suggestions
-    const extras = allProducts.filter(
-      (p) =>
-        p.category &&
-        ["dupatta", "kurti", "gown", "dress"].some((keyword) =>
-          p.category.toLowerCase().includes(keyword)
+        cartCats.some((cat) =>
+          p.category.toLowerCase().includes(cat.split(" ")[0])
         ) &&
         !cartItems.some((item) => item._id === p._id)
     );
 
-    const combined = [...filtered, ...extras].slice(0, 8);
+    const extras = allProducts.filter(
+      (p) =>
+        ["dupatt", "kurti", "gown", "dress"].some((k) =>
+          p.category?.toLowerCase().includes(k)
+        ) &&
+        !cartItems.some((item) => item._id === p._id)
+    );
 
-    if (combined.length === 0) {
+    const finalList = [...filtered, ...extras].slice(0, 10);
+
+    if (!finalList.length) {
       const fallback = allProducts.slice(-6).reverse();
       setRecommended(fallback);
       setIsFallback(true);
     } else {
-      setRecommended(combined);
+      setRecommended(finalList);
       setIsFallback(false);
     }
   }, [cartItems, allProducts]);
 
-  if (recommended.length === 0) return null;
+  if (!recommended.length) return null;
+
+  /* 📌 Scroll buttons */
+  const scrollLeft = () => {
+    scrollRef.current.scrollBy({ left: -260, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current.scrollBy({ left: 260, behavior: "smooth" });
+  };
 
   return (
     <div
-      className="w-full max-w-7xl mt-16 mb-10 mx-auto px-4 md:px-6 overflow-hidden"
+      className="w-full mt-16 mb-10 mx-auto px-4 md:px-6"
       style={{ background: COLORS.background }}
     >
       <motion.h2
         className="text-3xl font-bold text-center mb-8"
         style={{ color: COLORS.primary }}
-        initial={{ opacity: 0, y: -30 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
       >
         {isFallback ? "Popular Picks" : "You May Also Like"}
       </motion.h2>
 
-      {/* 🌀 DRAG SCROLLABLE WRAPPER */}
-      <motion.div
-        ref={carouselRef}
-        className="cursor-grab active:cursor-grabbing"
-        whileTap={{ cursor: "grabbing" }}
-      >
-        <motion.div
-          className="flex gap-6 pb-4"
-          drag="x"
-          dragConstraints={{
-            left: -((recommended.length - 3) * 260),
-            right: 0,
-          }}
-          dragElastic={0.12}
-          dragTransition={{ bounceStiffness: 200, bounceDamping: 20 }}
+      {/* 📌 MOBILE VIEW — vertical scroll */}
+      <div className="md:hidden flex flex-col gap-6">
+        {recommended.map((product, i) => (
+          <Link key={product._id} to={`/products/${product._id}`} className="">
+            <ProductCardMini product={product} />
+          </Link>
+        ))}
+      </div>
+
+      {/* 📌 DESKTOP VIEW — horizontal carousel */}
+      <div className="hidden md:block relative">
+        {/* Left Arrow */}
+        <button
+          onClick={scrollLeft}
+          className="absolute -left-3 top-1/2 -translate-y-1/2 bg-[#B3541E] text-white w-10 h-10 rounded-full shadow-lg z-20 hover:scale-110 transition"
         >
-          {recommended.map((item, i) => (
-            <motion.div
-              key={item._id}
-              className="flex-shrink-0 w-64 md:w-72 bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              whileHover={{ scale: 1.04 }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-            >
-              <Link to={`/products/${item._id}`} className="block">
-                <div
-                  className="relative w-full h-72 overflow-hidden rounded-t-2xl cursor-grab active:cursor-grabbing"
-                  ref={carouselRef}
-                  whileTap={{ cursor: "grabbing" }}
-                >
-                  <img
-                    src={item.images?.[0]}
-                    alt={item.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                  />
-                  {item.category && (
-                    <div className="absolute top-2 left-2 bg-[#B3541E]/80 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                      {item.category}
-                    </div>
-                  )}
-                </div>
+          ‹
+        </button>
 
-                <div className="p-4 flex flex-col items-start">
-                  <h3
-                    className="text-lg font-semibold truncate mb-1"
-                    style={{ color: COLORS.text }}
-                  >
-                    {item.name}
-                  </h3>
-                  <p
-                    className="font-bold text-lg"
-                    style={{ color: COLORS.primary }}
-                  >
-                    ₹ {item.price.toLocaleString()}
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
+        {/* Scrollable row */}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-scroll scrollbar-hide pb-4 scroll-smooth"
+        >
+          {recommended.map((product) => (
+            <Link key={product._id} to={`/products/${product._id}`}>
+              <ProductCardMini product={product} />
+            </Link>
           ))}
-        </motion.div>
-      </motion.div>
+        </div>
 
-      <p className="text-center text-gray-500 mt-4 text-sm">
+        {/* Right Arrow */}
+        <button
+          onClick={scrollRight}
+          className="absolute -right-3 top-1/2 -translate-y-1/2 bg-[#B3541E] text-white w-10 h-10 rounded-full shadow-lg z-20 hover:scale-110 transition"
+        >
+          ›
+        </button>
+      </div>
+
+      <p className="text-center text-gray-600 mt-4 text-sm">
         {isFallback
-          ? "Discover our most-loved pieces ✨"
-          : "Curated for you — inspired by your style & picks 💛"}
+          ? "Discover our most loved pieces ✨"
+          : "Curated just for you 💛 based on your cart"}
       </p>
+    </div>
+  );
+}
+
+/**************************************
+ ⭐ PRODUCT MINI CARD (MATCHING SHOP PAGE)
+**************************************/
+function ProductCardMini({ product }) {
+  const [imgIndex, setImgIndex] = useState(0);
+  const [hovering, setHovering] = useState(false);
+
+  /* Image slider on hover */
+  useEffect(() => {
+    if (!hovering) return;
+    const interval = setInterval(() => {
+      setImgIndex((prev) => (prev + 1) % product.images.length);
+    }, 900);
+
+    return () => clearInterval(interval);
+  }, [hovering]);
+
+  return (
+    <div
+      className="bg-white rounded-sm shadow-lg hover:shadow-xl transition-all flex flex-col w-64 md:w-72 cursor-pointer"
+      style={{ minHeight: 350 }}
+    >
+      {/* IMAGE */}
+      <div
+        className="relative w-full h-76 md:h-96 overflow-hidden rounded-sm"
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => {
+          setHovering(false);
+          setImgIndex(0);
+        }}
+      >
+        {product.images.map((img, idx) => (
+          <img
+            key={idx}
+            src={getCloudinaryThumbnail(img)}
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+            style={{
+              opacity: idx === imgIndex ? 1 : 0,
+            }}
+            loading="lazy"
+            alt={product.name}
+          />
+        ))}
+      </div>
+
+      {/* INFO */}
+      <div className="p-2 flex flex-col">
+        <h3
+          className="font-semibold text-base truncate"
+          style={{ color: COLORS.text }}
+        >
+          {product.name}
+        </h3>
+
+        <p className="text-sm text-gray-500 truncate">
+          {product.description?.slice(0, 40)}...
+        </p>
+
+        <span className="font-bold text-lg mt-1" style={{ color: COLORS.primary }}>
+          ₹ {product.price}
+        </span>
+      </div>
     </div>
   );
 }

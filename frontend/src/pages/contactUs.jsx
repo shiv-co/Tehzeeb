@@ -1,6 +1,7 @@
 import React from "react";
 // You can replace this with your own phone image
 import PhoneImage from "../assets/images/phone.png";
+import WhatsappPage from "../components/whatsapp.jsx";
 
 const COLORS = {
   primary: "#B3541E",     // Terracotta
@@ -115,6 +116,7 @@ export default function ContactUsPage() {
           </div>
         </div>
       </div>
+      <WhatsappPage/>
     </div>
   );
 }

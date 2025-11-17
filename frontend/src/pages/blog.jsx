@@ -2,6 +2,7 @@ import React from "react";
 
 import img2 from "../assets/images/img2.jpg"
 import blog_img1 from "../assets/images/blog_img1.png"
+import WhatsappPage from "../components/whatsapp";
 
 // Your Brand's Color Theme (copied from AboutPage)
 const COLORS = {
@@ -147,6 +148,7 @@ export default function BlogPage() {
           ))}
         </aside>
       </div>
+      <WhatsappPage/>
     </div>
   );
 }

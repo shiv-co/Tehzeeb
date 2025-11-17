@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { clearCart, clearBuyNowItem } from "../redux/cartSlice";
+import WhatsappPage from "../components/whatsapp.jsx";
 
 const COLORS = {
   primary: "#B3541E",
@@ -251,6 +252,7 @@ export default function CheckoutPage() {
           </Link>
         </div>
       </div>
+      <WhatsappPage/>
     </div>
   );
 }
