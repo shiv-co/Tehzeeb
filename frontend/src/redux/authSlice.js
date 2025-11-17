@@ -26,7 +26,7 @@ export const register = createAsyncThunk(
       // Use your deployed URL
       const { data } = await axios.post(
         // 'http://localhost:5000/api/users/register',
-        'https://tehzeeb.onrender.com/api/users/profile',
+        'https://tehzeeb.onrender.com/api/users/register',
         // 'https://tehzeeb-m4q8.vercel.app/api/users/register',
         { name, email, password },
         config
@@ -58,7 +58,7 @@ export const login = createAsyncThunk(
       // Use your deployed URL
       const { data } = await axios.post(
         // 'http://localhost:5000/api/users/login',
-        'https://tehzeeb.onrender.com/api/users/profile',
+        'https://tehzeeb.onrender.com/api/users/login',
         // 'https://tehzeeb-m4q8.vercel.app/api/users/login',
         { email, password },
         config
