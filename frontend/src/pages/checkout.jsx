@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { clearCart, clearBuyNowItem } from "../redux/cartSlice";
 import WhatsappPage from "../components/whatsapp.jsx";
+import { clearBuyNowItem } from "../redux/cartSlice";
 
 const COLORS = {
   primary: "#B3541E",
@@ -11,20 +11,20 @@ const COLORS = {
   background: "#F5EBDD",
   text: "#3E2F1C",
 };
+// const [paymentMethod, setPaymentMethod] = useState("");
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ✅ Get both cart and buyNow state from Redux
+  const [paymentMethod, setPaymentMethod] = useState("");
+
   const { buyNowItem, cartItems, cartTotalAmount } = useSelector(
     (state) => state.cart
   );
 
-  // ✅ If "Buy Now" was clicked, show only that product
   const productsToShow = buyNowItem ? [buyNowItem] : cartItems;
 
-  // ✅ Form data
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -34,43 +34,58 @@ export default function CheckoutPage() {
     postalCode: "",
   });
 
-  // ✅ Handle changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle order placement
-  const handlePlaceOrder = (e) => {
-    e.preventDefault();
+  const totalAmount = buyNowItem ? buyNowItem.price : cartTotalAmount;
 
-    if (!formData.fullName || !formData.address || !formData.phone) {
-      alert("Please fill in all required fields.");
-      return;
-    }
+  // ---------------------------------------
+  // 🚀 PLACE ORDER BUTTON CLICKED
+  // ---------------------------------------
 
-    alert("🎉 Order placed successfully! Thank you for shopping with Tehzeeb Creations.");
+ const handlePlaceOrder = (e) => {
+  e?.preventDefault?.();
 
-    // Clear only what’s needed
-    if (buyNowItem) {
-      dispatch(clearBuyNowItem()); // Clear single buy-now item
-    } else {
-      dispatch(clearCart()); // Clear cart
-    }
+  if (!formData.fullName || !formData.address || !formData.phone) {
+    alert("Please fill in all required fields.");
+    return;
+  }
 
-    navigate("/shop");
+  if (!paymentMethod) {
+    alert("Please select a payment method.");
+    return;
+  }
+
+  // Build order payload to pass to payment page (you can also POST/create order on backend here)
+  const orderPayload = {
+    amount: totalAmount, // number
+    items: productsToShow,
+    shipping: formData,
   };
 
-  // 🛠️ If user directly opens checkout without items, redirect
+  if (paymentMethod === "COD") {
+    // handle COD: create order backend call if required, then navigate
+    navigate("/order-success", { state: { method: "COD", order: orderPayload } });
+    return;
+  }
+
+  // For Razorpay / UPI via Razorpay: navigate to Payment page with state
+  if (paymentMethod === "RAZORPAY" || paymentMethod === "UPI_QR") {
+    navigate("/payment", { state: { orderPayload, paymentMethod } });
+    return;
+  }
+
+  // fallback
+  alert("Unsupported payment method selected.");
+};
+
+
   useEffect(() => {
     if (!buyNowItem && cartItems.length === 0) {
       navigate("/shop");
     }
-  }, [buyNowItem, cartItems, navigate]);
-
-  // ✅ Calculate total
-  const totalAmount = buyNowItem
-    ? buyNowItem.price
-    : cartTotalAmount;
+  }, []);
 
   return (
     <div
@@ -78,7 +93,7 @@ export default function CheckoutPage() {
       style={{ background: COLORS.background }}
     >
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10">
-        {/* ---- Left: Shipping Details ---- */}
+        {/* ---------------- LEFT SIDE — USER DETAILS ---------------- */}
         <div className="flex-1 bg-white p-8 rounded-2xl shadow-xl">
           <h2
             className="text-3xl font-bold mb-6"
@@ -86,96 +101,180 @@ export default function CheckoutPage() {
           >
             Checkout
           </h2>
+
           <form className="space-y-5" onSubmit={handlePlaceOrder}>
+            {/* FULL NAME */}
             <div>
-              <label className="block font-semibold mb-1" style={{ color: COLORS.text }}>
-                Full Name<span className="text-red-500">*</span>
-              </label>
+              <label className="block font-semibold mb-1">Full Name *</label>
               <input
                 type="text"
                 name="fullName"
+                className="w-full px-4 py-2 border rounded-lg"
                 value={formData.fullName}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-[#EAD8C0] rounded-lg focus:ring-2 focus:ring-[#D6A74F] outline-none"
                 placeholder="Enter your full name"
               />
             </div>
 
+            {/* EMAIL + PHONE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block font-semibold mb-1" style={{ color: COLORS.text }}>
-                  Email
-                </label>
+                <label className="block font-semibold mb-1">Email</label>
                 <input
                   type="email"
                   name="email"
+                  className="w-full px-4 py-2 border rounded-lg"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-[#EAD8C0] rounded-lg focus:ring-2 focus:ring-[#D6A74F] outline-none"
                   placeholder="you@example.com"
                 />
               </div>
               <div>
-                <label className="block font-semibold mb-1" style={{ color: COLORS.text }}>
-                  Phone<span className="text-red-500">*</span>
-                </label>
+                <label className="block font-semibold mb-1">Phone *</label>
                 <input
                   type="text"
                   name="phone"
+                  className="w-full px-4 py-2 border rounded-lg"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-[#EAD8C0] rounded-lg focus:ring-2 focus:ring-[#D6A74F] outline-none"
-                  placeholder="Enter your phone number"
+                  placeholder="Enter phone number"
                 />
               </div>
             </div>
 
+            {/* ADDRESS */}
             <div>
-              <label className="block font-semibold mb-1" style={{ color: COLORS.text }}>
-                Address<span className="text-red-500">*</span>
-              </label>
+              <label className="block font-semibold mb-1">Address *</label>
               <textarea
                 name="address"
+                className="w-full px-4 py-2 border rounded-lg"
+                rows="3"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-[#EAD8C0] rounded-lg focus:ring-2 focus:ring-[#D6A74F] outline-none"
-                rows="3"
-                placeholder="Street, Apartment, Locality"
-              />
+                placeholder="Street, Locality, House Number"
+              ></textarea>
             </div>
 
+            {/* CITY + PIN */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block font-semibold mb-1" style={{ color: COLORS.text }}>
-                  City
-                </label>
+                <label className="block font-semibold mb-1">City</label>
                 <input
                   type="text"
                   name="city"
+                  className="w-full px-4 py-2 border rounded-lg"
                   value={formData.city}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-[#EAD8C0] rounded-lg focus:ring-2 focus:ring-[#D6A74F] outline-none"
-                  placeholder="Enter your city"
+                  placeholder="City"
                 />
               </div>
               <div>
-                <label className="block font-semibold mb-1" style={{ color: COLORS.text }}>
-                  Postal Code
-                </label>
+                <label className="block font-semibold mb-1">Postal Code</label>
                 <input
                   type="text"
                   name="postalCode"
+                  className="w-full px-4 py-2 border rounded-lg"
                   value={formData.postalCode}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-[#EAD8C0] rounded-lg focus:ring-2 focus:ring-[#D6A74F] outline-none"
                   placeholder="PIN Code"
                 />
               </div>
             </div>
 
-            {/* Pulsing Place Order Button */}
+            {/* ---------------- PAYMENT METHOD ---------------- */}
+            {/* <div className="mt-6">
+              <h3
+                className="text-xl font-bold mb-3"
+                style={{ color: COLORS.text }}
+              >
+                Payment Method
+              </h3>
+
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="COD"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span className="font-medium">Cash on Delivery (COD)</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="UPI"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span className="font-medium">UPI / Wallet</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="Razorpay"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span className="font-medium">Pay Online (Razorpay)</span>
+                </label>
+              </div>
+            </div> */}
+
+            {/* PAYMENT METHOD SELECTION */}
+            <div className="bg-[#FFF3E3] p-4 rounded-xl mb-4">
+              <label
+                className="font-semibold block mb-2"
+                style={{ color: COLORS.text }}
+              >
+                Payment Method
+              </label>
+
+              <div className="flex flex-col md:flex-row gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="COD"
+                    checked={paymentMethod === "COD"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4"
+                  />
+                  <span className="ml-1">Cash on Delivery</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="RAZORPAY"
+                    checked={paymentMethod === "RAZORPAY"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4"
+                  />
+                  <span className="ml-1">UPI / Card / Wallet (Razorpay)</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="UPI_QR"
+                    checked={paymentMethod === "UPI_QR"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4"
+                  />
+                  <span className="ml-1">UPI (QR)</span>
+                </label>
+              </div>
+            </div>
+
+            {/* ---------------- SUBMIT ---------------- */}
             <motion.button
-              type="submit"
+              type="button"
+              onClick={handlePlaceOrder}
               className="w-full py-4 mt-4 rounded-xl text-lg font-bold text-white shadow-lg focus:outline-none"
               style={{ background: COLORS.primary }}
               animate={{ scale: [1, 1.04, 1] }}
@@ -186,17 +285,14 @@ export default function CheckoutPage() {
               }}
               whileHover={{ scale: 1.05 }}
             >
-              Place Order
+              Continue to Payment
             </motion.button>
           </form>
         </div>
 
-        {/* ---- Right: Order Summary ---- */}
+        {/* ---------------- RIGHT SIDE — ORDER SUMMARY ---------------- */}
         <div className="md:w-[400px] bg-white p-8 rounded-2xl shadow-xl h-fit sticky top-20">
-          <h3
-            className="text-2xl font-bold mb-6 border-b pb-3"
-            style={{ color: COLORS.primary }}
-          >
+          <h3 className="text-2xl font-bold mb-6 border-b pb-3">
             Order Summary
           </h3>
 
@@ -204,29 +300,32 @@ export default function CheckoutPage() {
             {productsToShow.map((item) => (
               <div
                 key={item._id}
-                className="flex justify-between items-center border-b pb-3"
+                className="flex justify-between border-b pb-3"
               >
                 <div className="flex items-center gap-3">
                   <img
-                    src={item.image || item.images?.[0]}
-                    alt={item.name}
+                    src={item.images?.[0]}
                     className="w-14 h-14 object-cover rounded-md border"
                   />
                   <div>
-                    <p className="font-semibold text-sm" style={{ color: COLORS.text }}>
-                      {item.name}
+                    <p className="font-semibold text-sm">{item.name}</p>
+                    <p className="text-xs text-gray-500">
+                      Qty: {item.quantity || 1}
                     </p>
-                    <p className="text-xs text-gray-500">Qty: {item.quantity || 1}</p>
                   </div>
                 </div>
-                <span className="font-semibold text-sm" style={{ color: COLORS.primary }}>
+
+                <span
+                  className="font-semibold text-sm"
+                  style={{ color: COLORS.primary }}
+                >
                   ₹ {(item.price * (item.quantity || 1)).toLocaleString()}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="border-t mt-5 pt-4 space-y-2 text-[#3E2F1C]">
+          <div className="border-t mt-5 pt-4 space-y-2">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>₹ {totalAmount.toLocaleString()}</span>
@@ -246,13 +345,14 @@ export default function CheckoutPage() {
 
           <Link
             to="/cart"
-            className="block text-center w-full py-3 mt-6 rounded-lg border border-[#B3541E] text-[#B3541E] font-bold hover:bg-[#B3541E] hover:text-white transition"
+            className="block text-center w-full py-3 mt-6 rounded-lg border text-[#B3541E]"
           >
             Back to Cart
           </Link>
         </div>
       </div>
-      <WhatsappPage/>
+
+      <WhatsappPage />
     </div>
   );
 }

@@ -26,6 +26,7 @@ import CancelRefundPage from "../pages/CancelRefundPage";
 import TermsConditionsPage from "../pages/TermsConditionsPage";
 import ShippingPolicyPage from "../pages/shippingPolicyPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
+import PaymentPage from "../pages/PaymentPage";
 
 // import ManageProductsScreen from "../pages/manageProductScreen";
 // import ProductEditScreen from "../pages/productEditScreen";
@@ -64,6 +65,7 @@ export default function AppRouter() {
 
         <Route path="/footer" element={<Footer />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
         <Route path="*" element={<NotFound />} />
 
          <Route path="" element={<AdminRoute />}>
