@@ -22,6 +22,11 @@ import ProductEditPage from "../pages/productEditPage";
 import CheckoutPage from "../pages/checkout";
 import AdminManageOrders from "../pages/AdminManageOrders";
 import ScrollToTop from "./ScrollToTop";
+import CancelRefundPage from "../pages/CancelRefundPage";
+import TermsConditionsPage from "../pages/TermsConditionsPage";
+import ShippingPolicyPage from "../pages/shippingPolicyPage";
+import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
+
 // import ManageProductsScreen from "../pages/manageProductScreen";
 // import ProductEditScreen from "../pages/productEditScreen";
 
@@ -36,7 +41,8 @@ function NotFound() {
 
 export default function AppRouter() {
   return (
-    <Router>
+    // <Router>
+    <>
       <Navbar />
       <ScrollToTop />
       <Routes>
@@ -50,6 +56,12 @@ export default function AppRouter() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/cancellation-refund" element={<CancelRefundPage />} />
+        <Route path="/terms-and-conditions" element={<TermsConditionsPage />} />
+        <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        
+
         <Route path="/footer" element={<Footer />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="*" element={<NotFound />} />
@@ -70,6 +82,7 @@ export default function AppRouter() {
           */}
         </Route>                                                                      
       </Routes>
-    </Router>
+ 
+    </>
   );
 }
