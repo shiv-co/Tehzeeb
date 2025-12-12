@@ -134,7 +134,10 @@ export default function CheckoutPage() {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10">
         {/* ---------------- LEFT SIDE — USER DETAILS ---------------- */}
         <div className="flex-1 bg-white p-8 rounded-2xl shadow-xl">
-          <h2 className="text-3xl font-bold mb-6" style={{ color: COLORS.primary }}>
+          <h2
+            className="text-3xl font-bold mb-6"
+            style={{ color: COLORS.primary }}
+          >
             Checkout
           </h2>
 
@@ -219,7 +222,10 @@ export default function CheckoutPage() {
 
             {/* ---------------- PAYMENT METHOD ---------------- */}
             <div className="bg-[#FFF3E3] p-4 rounded-xl mb-4">
-              <label className="font-semibold block mb-2" style={{ color: COLORS.text }}>
+              <label
+                className="font-semibold block mb-2"
+                style={{ color: COLORS.text }}
+              >
                 Payment Method
               </label>
 
@@ -269,21 +275,39 @@ export default function CheckoutPage() {
               className="w-full py-4 mt-4 rounded-xl text-lg font-bold text-white shadow-lg focus:outline-none"
               style={{ background: COLORS.primary }}
               animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
               whileHover={{ scale: 1.05 }}
             >
-              Continue to Payment
+              Place Order
             </motion.button>
+            <p className="text-sm md:text-base mt-3 text-red-600 font-medium">
+              If you face any issue during payment, feel free to reach us on
+              WhatsApp by clicking the
+              <span className="font-semibold text-[#25D366]">
+                {" "}
+                WhatsApp icon{" "}
+              </span>
+              at the bottom right corner.
+            </p>
           </form>
         </div>
 
         {/* ---------------- RIGHT SIDE — ORDER SUMMARY ---------------- */}
         <div className="md:w-[400px] bg-white p-8 rounded-2xl shadow-xl h-fit sticky top-20">
-          <h3 className="text-2xl font-bold mb-6 border-b pb-3">Order Summary</h3>
+          <h3 className="text-2xl font-bold mb-6 border-b pb-3">
+            Order Summary
+          </h3>
 
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
             {productsToShow.map((item) => (
-              <div key={item._id || item.id} className="flex justify-between border-b pb-3">
+              <div
+                key={item._id || item.id}
+                className="flex justify-between border-b pb-3"
+              >
                 <div className="flex items-center gap-3">
                   <img
                     src={item.image || item.images?.[0]}
@@ -292,11 +316,16 @@ export default function CheckoutPage() {
                   />
                   <div>
                     <p className="font-semibold text-sm">{item.name}</p>
-                    <p className="text-xs text-gray-500">Qty: {item.quantity || 1}</p>
+                    <p className="text-xs text-gray-500">
+                      Qty: {item.quantity || 1}
+                    </p>
                   </div>
                 </div>
 
-                <span className="font-semibold text-sm" style={{ color: COLORS.primary }}>
+                <span
+                  className="font-semibold text-sm"
+                  style={{ color: COLORS.primary }}
+                >
                   ₹ {(item.price * (item.quantity || 1)).toLocaleString()}
                 </span>
               </div>
@@ -312,7 +341,9 @@ export default function CheckoutPage() {
 
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span>{shippingCharge === 0 ? "Free" : `₹${shippingCharge}`}</span>
+              <span>
+                {shippingCharge === 0 ? "Free" : `₹${shippingCharge}`}
+              </span>
             </div>
 
             <div className="border-t my-2"></div>
