@@ -1,29 +1,32 @@
-import React, { useState } from 'react';
-import { FiShoppingBag, FiMenu, FiX, FiUser } from 'react-icons/fi';
-import logo from '/icons/Logo1.png';
-import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/authSlice'; // Check this path!
+import React, { useState } from "react";
+import { FiShoppingBag, FiMenu, FiX, FiUser } from "react-icons/fi";
+import logo from "/icons/Logo1.png";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice"; // Check this path!
+
 
 const COLORS = {
-  primary: '#B3541E',
-  secondary: '#D6A74F',
-  accent: '#A5A58D',
-  text: '#3E2F1C',
-  background: '#F5EBDD',
+  primary: "#B3541E",
+  secondary: "#D6A74F",
+  accent: "#A5A58D",
+  text: "#3E2F1C",
+  background: "#F5EBDD",
 };
 
 const menu = [
-  { name: 'Home', href: '/' },
-  { name: 'About Us', href: '/about' },
-  { name: 'Shop', href: '/shop' },
-  { name: 'Tehzeeb Journal', href: '/Blog' },
-  { name: 'Contact', href: '/contact' },
+  { name: "Home", href: "/" },
+  { name: "About Us", href: "/about" },
+  { name: "Shop", href: "/shop" },
+  { name: "Tehzeeb Journal", href: "/Blog" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const cartQuantity = useSelector((state) => state.cart.cartTotalQuantity);
 
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
@@ -47,7 +50,7 @@ export default function Navbar() {
         {/* main row */}
         <div className="flex items-center h-full">
           {/* Brand */}
-          <div className="flex items-center" style={{ paddingLeft: '4px' }}>
+          <div className="flex items-center" style={{ paddingLeft: "4px" }}>
             <Link to="/">
               <img
                 src={logo}
@@ -81,10 +84,16 @@ export default function Navbar() {
           <div className="flex items-center space-x-6 ml-auto">
             <Link
               to="/cart"
-              className="transition-colors"
+              className="relative transition-colors"
               style={{ color: COLORS.primary }}
             >
               <FiShoppingBag size={22} />
+
+              {cartQuantity > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                  {cartQuantity}
+                </span>
+              )}
             </Link>
 
             {/* Profile Icon */}
@@ -99,13 +108,17 @@ export default function Navbar() {
                   <div
                     className="flex items-center justify-center h-8 w-8 rounded-full bg-[#F5EBDD] text-primary text-xl font-bold shadow-inner" // <-- Added text-primary
                   >
-                    {userInfo.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
+                    {userInfo.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()}
                   </div>
                 ) : (
                   <FiUser size={26} />
                 )}
               </button>
-                  
+
               {profileOpen && (
                 <div
                   className="absolute right-0 mt-3 w-64 shadow-xl rounded-xl border p-5 flex flex-col gap-3"
@@ -134,7 +147,7 @@ export default function Navbar() {
                       <Link
                         to="/login"
                         className="w-full py-2 mb-2 rounded-lg text-center font-semibold transition"
-                        style={{ background: COLORS.primary, color: '#fff' }}
+                        style={{ background: COLORS.primary, color: "#fff" }}
                         onClick={() => setProfileOpen(false)} // Close dropdown
                       >
                         Login
@@ -158,10 +171,13 @@ export default function Navbar() {
                           className="flex items-center justify-center h-12 w-12 rounded-full text-xl font-bold shadow"
                           style={{
                             background: COLORS.secondary,
-                            color: '#fff',
+                            color: "#fff",
                           }}
                         >
-                          {userInfo.name.split(' ').map((n) => n[0]).join('')}
+                          {userInfo.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
                         </div>
                         <div>
                           <div
@@ -233,9 +249,7 @@ export default function Navbar() {
               onMouseOver={(e) =>
                 (e.currentTarget.style.color = COLORS.secondary)
               }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.color = COLORS.primary)
-              }
+              onMouseOut={(e) => (e.currentTarget.style.color = COLORS.primary)}
             >
               {item.name}
             </Link>
@@ -254,4 +268,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
