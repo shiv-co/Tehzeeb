@@ -17,14 +17,21 @@ const orderItemSchema = new mongoose.Schema(
 
 const orderSchema = new mongoose.Schema(
   {
+    trackingId: {
+  type: String,
+   default: () => "TC" + Math.floor(100000 + Math.random() * 900000),
+  unique: true,
+  required: true
+  },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     orderItems: [orderItemSchema],
     shippingAddress: {
       address: { type: String, required: true },
+      phone: { type: String, required: true }, 
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
       country: { type: String, default: "India" },
@@ -58,6 +65,7 @@ const orderSchema = new mongoose.Schema(
     deliveredAt: {
       type: Date,
     },
+    
   },
   { timestamps: true }
 );

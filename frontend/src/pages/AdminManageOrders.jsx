@@ -17,140 +17,176 @@ export default function AdminManageOrders() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // 🧠 Fetch orders from backend
+  // ✔ Fetch admin token
+  const adminInfo = JSON.parse(localStorage.getItem("userInfo"));
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data } = await axios.get("/api/orders");
-        //   console.log("Fetched orders:", data); // 👀 Debug log
-        setOrders(Array.isArray(data) ? data : []); // ✅ Always ensure it's an array
+        const { data } = await axios.get("/api/orders", {
+          headers: {
+            Authorization: `Bearer ${adminInfo?.token}`,
+          },
+        });
+
+        setOrders(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching orders:", error);
-        setOrders([]); // fallback
       } finally {
         setLoading(false);
       }
     };
+
     fetchOrders();
   }, []);
 
-  // 🗑 Delete order
+  // 🗑 Delete Order
   const deleteOrder = async (id) => {
-    if (window.confirm("Are you sure you want to delete this order?")) {
-      try {
-        await axios.delete(`/api/orders/${id}`);
-        setOrders((prev) => prev.filter((order) => order._id !== id));
-        alert("🗑️ Order deleted successfully");
-      } catch (error) {
-        console.error("Error deleting order:", error);
-      }
+    if (!window.confirm("Are you sure you want to delete this order?")) return;
+
+    try {
+      await axios.delete(`/api/orders/${id}`, {
+        headers: { Authorization: `Bearer ${adminInfo?.token}` },
+      });
+
+      setOrders((prev) => prev.filter((o) => o._id !== id));
+    } catch (error) {
+      console.error("Error deleting:", error);
     }
   };
 
-  // ✅ Mark as delivered
+  // ✔ Mark Delivered
   const markAsDelivered = async (id) => {
     try {
-      await axios.put(`/api/orders/${id}/deliver`);
-      setOrders((prev) =>
-        prev.map((order) =>
-          order._id === id ? { ...order, isDelivered: true } : order
-        )
+      await axios.put(
+        `/api/orders/${id}/deliver`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${adminInfo?.token}` },
+        }
       );
-      alert("✅ Order marked as delivered!");
+
+      setOrders((prev) =>
+        prev.map((o) => (o._id === id ? { ...o, isDelivered: true } : o))
+      );
     } catch (error) {
-      console.error("Error updating order:", error);
+      console.error("Delivery update failed:", error);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5EBDD] text-[#B3541E] text-2xl font-semibold">
-        Loading Orders...
+      <div className="flex h-screen items-center justify-center text-xl font-semibold text-[#B3541E]">
+        Loading orders...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 bg-[#F5EBDD]">
+    <div
+      className="min-h-screen px-6 py-8"
+      style={{ background: COLORS.background }}
+    >
       <Link
         to="/admin/dashboard"
-        className="inline-block mb-4 text-sm font-semibold"
+        className="text-sm font-semibold"
         style={{ color: COLORS.accent }}
       >
-        &larr; Go Back to Admin Dashboard
+        ← Back to Dashboard
       </Link>
-      <h1 className="text-3xl font-bold text-[#B3541E] mb-8 text-center">
+
+      <h1
+        className="text-4xl font-bold text-center mt-4 mb-8"
+        style={{ color: COLORS.primary }}
+      >
         Manage Orders
       </h1>
 
       {orders.length === 0 ? (
-        <div className="text-center text-[#3E2F1C] text-lg">
-          No orders have been placed yet.
+        <div className="text-center text-lg text-[#3E2F1C] mt-10">
+          No orders found yet.
         </div>
       ) : (
-        <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#B3541E] text-white">
+        <div className="overflow-x-auto shadow-xl rounded-xl bg-white">
+          <table className="w-full text-left">
+            <thead className="sticky top-0 bg-[#B3541E] text-white text-sm">
               <tr>
-                <th className="py-3 px-4 text-left">Order ID</th>
-                <th className="py-3 px-4 text-left">Customer</th>
-                <th className="py-3 px-4 text-left">Date</th>
-                <th className="py-3 px-4 text-left">Total</th>
-                <th className="py-3 px-4 text-left">Status</th>
+                <th className="py-3 px-4">Tracking ID</th>
+                <th className="py-3 px-4">Customer</th>
+                <th className="py-3 px-4">Payment</th>
+                <th className="py-3 px-4">Total</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-center">Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {orders.map((order, i) => (
                 <motion.tr
                   key={order._id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="border-b hover:bg-[#FFF5E1] transition"
+                  transition={{ delay: i * 0.04 }}
+                  className="border-b hover:bg-[#FFF5E1] text-sm"
                 >
-                  <td className="py-3 px-4">{order._id.slice(-6)}</td>
-                  <td className="py-3 px-4">{order.user?.name || "Guest"}</td>
-                  <td className="py-3 px-4">
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </td>
                   <td className="py-3 px-4 font-semibold text-[#B3541E]">
+                    {order.trackingId || "—"}
+                  </td>
+
+                  <td className="py-3 px-4">{order.user?.name || "Guest"}</td>
+
+                  <td className="py-3 px-4">
+                    {order.paymentMethod === "COD" ? (
+                      <span className="px-2 py-1 rounded bg-yellow-200 text-yellow-800 text-xs">
+                        COD (Not Paid)
+                      </span>
+                    ) : order.isPaid ? (
+                      <span className="px-2 py-1 rounded bg-green-200 text-green-800 text-xs">
+                        Paid Online
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+
+                  <td className="py-3 px-4 font-semibold">
                     ₹ {order.totalPrice.toLocaleString()}
                   </td>
+
                   <td className="py-3 px-4">
                     {order.isDelivered ? (
-                      <span className="text-green-600 font-semibold">
+                      <span className="px-2 py-1 rounded bg-green-200 text-green-800 text-xs">
                         Delivered
                       </span>
                     ) : (
-                      <span className="text-yellow-600 font-semibold">
+                      <span className="px-2 py-1 rounded bg-orange-200 text-orange-800 text-xs">
                         Pending
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-4 flex justify-center items-center gap-3">
+
+                  <td className="py-3 px-4 flex justify-center gap-3">
                     <button
                       onClick={() => setSelectedOrder(order)}
-                      className="text-[#B3541E] hover:text-[#D6A74F] transition"
-                      title="View Details"
+                      className="text-[#B3541E] hover:scale-110 transition"
                     >
-                      <FiEye size={20} />
+                      <FiEye size={18} />
                     </button>
+
                     {!order.isDelivered && (
                       <button
                         onClick={() => markAsDelivered(order._id)}
-                        className="text-green-600 hover:text-green-800 transition"
-                        title="Mark as Delivered"
+                        className="text-green-600 hover:scale-110 transition"
                       >
-                        <FiCheckCircle size={20} />
+                        <FiCheckCircle size={18} />
                       </button>
                     )}
+
                     <button
                       onClick={() => deleteOrder(order._id)}
-                      className="text-red-500 hover:text-red-700 transition"
-                      title="Delete Order"
+                      className="text-red-500 hover:scale-110 transition"
                     >
-                      <FiTrash2 size={20} />
+                      <FiTrash2 size={18} />
                     </button>
                   </td>
                 </motion.tr>
@@ -160,49 +196,101 @@ export default function AdminManageOrders() {
         </div>
       )}
 
-      {/* --- Order Details Modal --- */}
+      {/* ————————— MODAL ————————— */}
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md"
+            className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto"
           >
+            {/* HEADER */}
             <h2
               className="text-2xl font-bold mb-4 border-b pb-2"
               style={{ color: COLORS.primary }}
             >
               Order Details
             </h2>
-            <p>
-              <strong>Customer:</strong> {selectedOrder.user?.name || "Guest"}
-            </p>
-            <p>
-              <strong>Email:</strong> {selectedOrder.user?.email || "N/A"}
-            </p>
-            <p>
-              <strong>Total:</strong> ₹{" "}
-              {selectedOrder.totalPrice.toLocaleString()}
-            </p>
-            <p>
-              <strong>Status:</strong>{" "}
-              {selectedOrder.isDelivered ? "Delivered" : "Pending"}
-            </p>
 
-            <h3 className="mt-4 font-semibold">Items:</h3>
-            <ul className="list-disc ml-5 mt-2 text-sm">
-              {selectedOrder.orderItems.map((item, i) => (
-                <li key={i}>
-                  {item.name} × {item.qty} — ₹
-                  {(item.price * item.qty).toLocaleString()}
-                </li>
+            {/* CUSTOMER INFO */}
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Order ID:</strong> {selectedOrder._id}
+              </p>
+              <p>
+                <strong>Customer:</strong> {selectedOrder.user?.name || "Guest"}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedOrder.user?.email || "N/A"}
+              </p>
+              <p>
+                <strong>Phone:</strong>{" "}
+                {selectedOrder.shippingAddress?.phone || "N/A"}
+              </p>
+              <p>
+                <strong>Address:</strong>{" "}
+                {selectedOrder.shippingAddress?.address},{" "}
+                {selectedOrder.shippingAddress?.city},{" "}
+                {selectedOrder.shippingAddress?.postalCode}
+              </p>
+              <p>
+                <strong>Status:</strong>{" "}
+                {selectedOrder.isDelivered ? (
+                  <span className="text-green-600 font-semibold">
+                    Delivered
+                  </span>
+                ) : (
+                  <span className="text-yellow-600 font-semibold">Pending</span>
+                )}
+              </p>
+              <p>
+                <strong>Total Price:</strong>{" "}
+                <span className="font-bold text-[#B3541E]">
+                  ₹ {selectedOrder.totalPrice.toLocaleString()}
+                </span>
+              </p>
+            </div>
+
+            {/* ORDER ITEMS */}
+            <h3
+              className="mt-5 text-lg font-semibold"
+              style={{ color: COLORS.primary }}
+            >
+              Ordered Items
+            </h3>
+
+            <div className="space-y-4 mt-3">
+              {selectedOrder.orderItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex gap-4 p-3 border rounded-lg bg-[#FFF8EE] shadow-sm"
+                >
+                  {/* Product Image */}
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-20 h-20 object-cover rounded-md border"
+                  />
+
+                  {/* Product Info */}
+                  <div className="flex-1">
+                    <p className="font-semibold">{item.name}</p>
+                    <p className="text-sm text-gray-600">Qty: {item.qty}</p>
+                  </div>
+
+                  {/* Price */}
+                  <div className="font-bold text-[#B3541E]">
+                    ₹ {(item.price * item.qty).toLocaleString()}
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
 
-            <div className="mt-6 flex justify-end gap-3">
+            {/* FOOTER BUTTON */}
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 rounded-lg bg-[#B3541E] text-white font-semibold hover:bg-[#D6A74F] transition"
+                className="px-5 py-2 rounded-lg bg-[#B3541E] text-white font-semibold hover:bg-[#D6A74F] transition"
               >
                 Close
               </button>

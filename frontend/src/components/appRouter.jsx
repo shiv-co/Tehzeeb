@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
 // Import your pages
 import Navbar from "./navbar";
 import HomePage from "../pages/home";
@@ -27,6 +26,8 @@ import TermsConditionsPage from "../pages/TermsConditionsPage";
 import ShippingPolicyPage from "../pages/shippingPolicyPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
 import PaymentPage from "../pages/PaymentPage";
+import OrderSuccessPage from "../pages/OrderSuccessPage";
+import OrderDetailsPage from "../pages/OrderDetailsPage"; 
 
 // import ManageProductsScreen from "../pages/manageProductScreen";
 // import ProductEditScreen from "../pages/productEditScreen";
@@ -61,11 +62,16 @@ export default function AppRouter() {
         <Route path="/terms-and-conditions" element={<TermsConditionsPage />} />
         <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/footer" element={<Footer />} />
         
 
-        <Route path="/footer" element={<Footer />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+      <Route path="/orders/details/:trackingId" element={<OrderDetailsPage />} />
+
+
+
         <Route path="*" element={<NotFound />} />
 
          <Route path="" element={<AdminRoute />}>
@@ -84,6 +90,7 @@ export default function AppRouter() {
           */}
         </Route>                                                                      
       </Routes>
+      <Footer />
  
     </>
   );

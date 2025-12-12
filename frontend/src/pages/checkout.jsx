@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import WhatsappPage from "../components/whatsapp.jsx";
 import { clearBuyNowItem } from "../redux/cartSlice";
+import axios from "axios";
 
 const COLORS = {
   primary: "#B3541E",
@@ -11,7 +12,6 @@ const COLORS = {
   background: "#F5EBDD",
   text: "#3E2F1C",
 };
-// const [paymentMethod, setPaymentMethod] = useState("");
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -38,54 +38,93 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const totalAmount = buyNowItem ? buyNowItem.price : cartTotalAmount;
+  // -------------------------------
+  // ✅ SHIPPING + TOTAL CALCULATION
+  // -------------------------------
+
+  const subtotal = buyNowItem
+    ? buyNowItem.price * (buyNowItem.quantity || 1)
+    : cartTotalAmount;
+
+  const shippingCharge = subtotal >= 5000 ? 0 : 50;
+  const amount = subtotal + shippingCharge;
 
   // ---------------------------------------
   // 🚀 PLACE ORDER BUTTON CLICKED
   // ---------------------------------------
 
- const handlePlaceOrder = (e) => {
-  e?.preventDefault?.();
+  const handlePlaceOrder = async (e) => {
+    e?.preventDefault?.();
 
-  if (!formData.fullName || !formData.address || !formData.phone) {
-    alert("Please fill in all required fields.");
-    return;
-  }
-
-  if (!paymentMethod) {
-    alert("Please select a payment method.");
-    return;
-  }
-
-  // Build order payload to pass to payment page (you can also POST/create order on backend here)
-  const orderPayload = {
-    amount: totalAmount, // number
-    items: productsToShow,
-    shipping: formData,
-  };
-
-  if (paymentMethod === "COD") {
-    // handle COD: create order backend call if required, then navigate
-    navigate("/order-success", { state: { method: "COD", order: orderPayload } });
-    return;
-  }
-
-  // For Razorpay / UPI via Razorpay: navigate to Payment page with state
-  if (paymentMethod === "RAZORPAY" || paymentMethod === "UPI_QR") {
-    navigate("/payment", { state: { orderPayload, paymentMethod } });
-    return;
-  }
-
-  // fallback
-  alert("Unsupported payment method selected.");
-};
-
-
-  useEffect(() => {
-    if (!buyNowItem && cartItems.length === 0) {
-      navigate("/shop");
+    if (!formData.fullName || !formData.address || !formData.phone) {
+      alert("Please fill in all required fields.");
+      return;
     }
-  }, []);
+
+    if (!paymentMethod) {
+      alert("Please select a payment method.");
+      return;
+    }
+
+    // -------------------------------
+    // COD ORDER (Direct create order)
+    // -------------------------------
+    if (paymentMethod === "COD") {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+      const { data } = await axios.post(
+        // "http://localhost:5000/api/orders",
+
+        "https://tehzeeb.onrender.com/api/orders",
+        {
+          orderItems: productsToShow.map((item) => ({
+            name: item.name || "Unnamed Product",
+            qty: item.quantity || 1,
+            image: item.image || item.images?.[0] || "",
+            price: item.price,
+            product: item.product || item._id,
+          })),
+          shippingAddress: {
+            address: formData.address,
+            city: formData.city,
+            postalCode: formData.postalCode,
+            country: "India",
+            phone: formData.phone,
+            fullName: formData.fullName,
+            email: formData.email,
+          },
+          paymentMethod: "COD",
+          totalPrice: amount,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo?.token}` },
+        }
+      );
+
+      dispatch(clearBuyNowItem());
+
+      navigate(`/order-success?trackingId=${data.trackingId}`);
+      return;
+    }
+
+    // -------------------------------
+    // ONLINE PAYMENT → Razorpay Page
+    // -------------------------------
+    if (paymentMethod === "RAZORPAY" || paymentMethod === "UPI_QR") {
+      sessionStorage.setItem("shippingInfo", JSON.stringify(formData));
+
+      const orderPayload = {
+        amount,
+        items: productsToShow,
+        shipping: formData,
+      };
+
+      navigate("/payment", { state: { orderPayload, paymentMethod } });
+      return;
+    }
+
+    alert("Unsupported payment method selected.");
+  };
 
   return (
     <div
@@ -95,10 +134,7 @@ export default function CheckoutPage() {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10">
         {/* ---------------- LEFT SIDE — USER DETAILS ---------------- */}
         <div className="flex-1 bg-white p-8 rounded-2xl shadow-xl">
-          <h2
-            className="text-3xl font-bold mb-6"
-            style={{ color: COLORS.primary }}
-          >
+          <h2 className="text-3xl font-bold mb-6" style={{ color: COLORS.primary }}>
             Checkout
           </h2>
 
@@ -182,53 +218,8 @@ export default function CheckoutPage() {
             </div>
 
             {/* ---------------- PAYMENT METHOD ---------------- */}
-            {/* <div className="mt-6">
-              <h3
-                className="text-xl font-bold mb-3"
-                style={{ color: COLORS.text }}
-              >
-                Payment Method
-              </h3>
-
-              <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="COD"
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <span className="font-medium">Cash on Delivery (COD)</span>
-                </label>
-
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="UPI"
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <span className="font-medium">UPI / Wallet</span>
-                </label>
-
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="Razorpay"
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <span className="font-medium">Pay Online (Razorpay)</span>
-                </label>
-              </div>
-            </div> */}
-
-            {/* PAYMENT METHOD SELECTION */}
             <div className="bg-[#FFF3E3] p-4 rounded-xl mb-4">
-              <label
-                className="font-semibold block mb-2"
-                style={{ color: COLORS.text }}
-              >
+              <label className="font-semibold block mb-2" style={{ color: COLORS.text }}>
                 Payment Method
               </label>
 
@@ -278,11 +269,7 @@ export default function CheckoutPage() {
               className="w-full py-4 mt-4 rounded-xl text-lg font-bold text-white shadow-lg focus:outline-none"
               style={{ background: COLORS.primary }}
               animate={{ scale: [1, 1.04, 1] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               whileHover={{ scale: 1.05 }}
             >
               Continue to Payment
@@ -292,53 +279,48 @@ export default function CheckoutPage() {
 
         {/* ---------------- RIGHT SIDE — ORDER SUMMARY ---------------- */}
         <div className="md:w-[400px] bg-white p-8 rounded-2xl shadow-xl h-fit sticky top-20">
-          <h3 className="text-2xl font-bold mb-6 border-b pb-3">
-            Order Summary
-          </h3>
+          <h3 className="text-2xl font-bold mb-6 border-b pb-3">Order Summary</h3>
 
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
             {productsToShow.map((item) => (
-              <div
-                key={item._id}
-                className="flex justify-between border-b pb-3"
-              >
+              <div key={item._id || item.id} className="flex justify-between border-b pb-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={item.images?.[0]}
+                    src={item.image || item.images?.[0]}
                     className="w-14 h-14 object-cover rounded-md border"
+                    alt={item.name}
                   />
                   <div>
                     <p className="font-semibold text-sm">{item.name}</p>
-                    <p className="text-xs text-gray-500">
-                      Qty: {item.quantity || 1}
-                    </p>
+                    <p className="text-xs text-gray-500">Qty: {item.quantity || 1}</p>
                   </div>
                 </div>
 
-                <span
-                  className="font-semibold text-sm"
-                  style={{ color: COLORS.primary }}
-                >
+                <span className="font-semibold text-sm" style={{ color: COLORS.primary }}>
                   ₹ {(item.price * (item.quantity || 1)).toLocaleString()}
                 </span>
               </div>
             ))}
           </div>
 
+          {/* SUMMARY TOTALS */}
           <div className="border-t mt-5 pt-4 space-y-2">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>₹ {totalAmount.toLocaleString()}</span>
+              <span>₹ {subtotal.toLocaleString()}</span>
             </div>
+
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span>Free</span>
+              <span>{shippingCharge === 0 ? "Free" : `₹${shippingCharge}`}</span>
             </div>
+
             <div className="border-t my-2"></div>
+
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
               <span style={{ color: COLORS.primary }}>
-                ₹ {totalAmount.toLocaleString()}
+                ₹ {amount.toLocaleString()}
               </span>
             </div>
           </div>

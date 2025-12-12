@@ -1,38 +1,61 @@
-import Razorpay from 'razorpay';
-import express from 'express';
+
+import Razorpay from "razorpay";
+import express from "express";
 import crypto from "crypto";
+import Order from "../models/orderModel.js";
 
 const router = express.Router();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_SECRET,
-});
 
-router.post('/create-order', async (req, res) => {
+
+// Initialize Razorpay safely
+let razorpay;
+
+try {
+  razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_SECRET,
+  });
+
+  // console.log("✅ Razorpay initialized successfully");
+} catch (err) {
+  console.error("❌ Razorpay initialization FAILED:", err.message);
+}
+
+// ---------------- CREATE ORDER ----------------
+router.post("/create-order", async (req, res) => {
+  if (!razorpay) return res.status(500).json({ message: "Razorpay not initialized" });
+
   try {
     const options = {
-      amount: req.body.amount * 100, // amount in paisa
-      currency: 'INR',
-      receipt: `order_rcptid_${Math.floor(Math.random() * 10000)}`,
+      amount: req.body.amount * 100,
+      currency: "INR",
+      receipt: "rcpt_" + Date.now(),
     };
 
     const order = await razorpay.orders.create(options);
     res.json(order);
+
   } catch (err) {
-    res.status(500).json({ message: 'Failed to create Razorpay order', error: err });
+    console.error("Order creation error:", err);
+    res.status(500).json({ message: "Failed to create Razorpay order", error: err });
   }
 });
 
+// ---------------- VERIFY SIGNATURE ----------------
 router.post("/verify", async (req, res) => {
   try {
     const {
       razorpay_payment_id,
       razorpay_order_id,
       razorpay_signature,
+      amount,
+      shippingInfo,
+      cartItems,
+      buyNowItem,
+      userId,
     } = req.body;
 
-    // Matching signature using the secret key
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSign = crypto
@@ -40,13 +63,47 @@ router.post("/verify", async (req, res) => {
       .update(sign)
       .digest("hex");
 
-    if (expectedSign === razorpay_signature) {
-      return res.json({ success: true, message: "Payment verified successfully" });
-    } else {
+    if (expectedSign !== razorpay_signature) {
       return res.json({ success: false, message: "Invalid signature" });
     }
+
+    const orderItems = (buyNowItem ? [buyNowItem] : cartItems).map((item) => ({
+      name: item.name,
+      qty: item.quantity || 1,
+      image: item.images?.[0],
+      price: item.price,
+      product: item._id,
+    }));
+
+    const order = await Order.create({
+      user: userId || null,
+      orderItems,
+      shippingAddress: {
+        address: shippingInfo.address,
+        city: shippingInfo.city,
+        postalCode: shippingInfo.postalCode,
+        country: "India",
+      },
+      paymentMethod: "Razorpay",
+      paymentResult: {
+        id: razorpay_payment_id,
+        status: "Paid",
+        update_time: new Date(),
+        email_address: shippingInfo.email,
+      },
+      totalPrice: amount,
+      isPaid: true,
+      paidAt: new Date(),
+    });
+
+    res.json({
+      success: true,
+      orderId: order._id,
+      trackingId: order.trackingId,
+    });
+
   } catch (error) {
-    console.error("Payment verification error:", error);
+    // console.error("Payment verification error:", error);
     res.status(500).json({ success: false, message: "Verification error" });
   }
 });

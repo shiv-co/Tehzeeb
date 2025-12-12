@@ -24,35 +24,70 @@ export const deleteOrder = asyncHandler(async (req, res) => {
 export const markOrderAsDelivered = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
-  if (order) {
-    order.isDelivered = true;
-    order.deliveredAt = Date.now();
-
-    const updatedOrder = await order.save();
-    res.json(updatedOrder);
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
   }
+
+  order.isDelivered = true;
+  order.deliveredAt = Date.now();
+
+  const updatedOrder = await order.save();
+  res.json(updatedOrder);
 });
+
 
 // @desc    Create new order
 export const createOrder = asyncHandler(async (req, res) => {
-  const { orderItems, shippingAddress, paymentMethod, totalPrice } = req.body;
+  try {
+    const { orderItems, shippingAddress, paymentMethod, totalPrice } = req.body;
 
-  if (orderItems && orderItems.length === 0) {
-    res.status(400);
-    throw new Error("No order items");
+   
+
+    if (!orderItems || orderItems.length === 0) {
+      console.log("❌ ERROR: No order items received");
+      return res.status(400).json({ message: "No order items" });
+    }
+
+    const order = new Order({
+      trackingId: "TC" + Date.now(),
+      user: req.user?._id || null,
+      orderItems,
+      shippingAddress,
+      paymentMethod,
+      totalPrice,
+      isPaid: paymentMethod === "COD" ? false : true,
+    });
+
+    const createdOrder = await order.save();
+    console.log("✅ COD Order saved:", createdOrder._id);
+
+    return res.status(201).json(createdOrder);
+
+  } catch (err) {
+    console.error("🔥 SERVER ERROR in createOrder:", err);
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+export const getOrderById = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    res.status(404);
+    throw new Error("Order not found");
   }
 
-  const order = new Order({
-    user: req.user._id,
-    orderItems,
-    shippingAddress,
-    paymentMethod,
-    totalPrice,
-  });
+  res.json(order);
+});
 
-  const createdOrder = await order.save();
-  res.status(201).json(createdOrder);
+export const getOrderByTrackingId = asyncHandler(async (req, res) => {
+  const order = await Order.findOne({ trackingId: req.params.trackingId });
+
+  if (!order) {
+    res.status(404);
+    throw new Error("Order not found with this Tracking ID");
+  }
+
+  res.json(order);
 });

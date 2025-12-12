@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { clearCart, clearBuyNowItem } from "../redux/cartSlice.js";
+
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -12,20 +14,30 @@ const COLORS = {
 };
 
 // Your backend URL
-const API_URL = "https://tehzeeb.onrender.com/api"; 
-// For local dev use: "http://localhost:5000/api"
-
+const API_URL = "https://tehzeeb.onrender.com/api";
+// const API_URL = "http://localhost:5000/api";
+// For local dev use:
 export default function PaymentPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Get cart items & total price from Redux
-  const { cartItems, cartTotalAmount } = useSelector((state) => state.cart);
+  const { cartItems, cartTotalAmount, buyNowItem } = useSelector(
+    (state) => state.cart
+  );
+
+  const amount = buyNowItem
+    ? buyNowItem.price * (buyNowItem.quantity || 1)
+    : cartTotalAmount;
 
   // Get address stored from checkout page
   const shippingInfo = JSON.parse(sessionStorage.getItem("shippingInfo"));
 
+
   useEffect(() => {
-    if (!shippingInfo || cartItems.length === 0) {
+
+    if (!shippingInfo) {
+      alert("Missing checkout details.");
       navigate("/checkout");
     }
   }, []);
@@ -56,9 +68,10 @@ export default function PaymentPage() {
 
     try {
       // STEP 1 → Create order in backend
-      const { data: orderData } = await axios.post(`${API_URL}/payment/create-order`, {
-        amount: cartTotalAmount,
-      });
+      const { data: orderData } = await axios.post(
+        `${API_URL}/payment/create-order`,
+        { amount }
+      );
 
       // STEP 2 → Open Razorpay checkout
       const options = {
@@ -71,18 +84,24 @@ export default function PaymentPage() {
         order_id: orderData.id,
         handler: async function (response) {
           // STEP 3 → Send payment verification to backend
+          const userId = JSON.parse(localStorage.getItem("userInfo"))?._id;
+
           const verifyRes = await axios.post(`${API_URL}/payment/verify`, {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
-            amount: cartTotalAmount,
+            amount: amount,
             shippingInfo,
+            buyNowItem,
             cartItems,
+            userId,
           });
 
           if (verifyRes.data.success) {
-            // Clear cart after success
-            navigate("/order-success");
+            dispatch(clearCart());
+            dispatch(clearBuyNowItem());
+
+            navigate(`/order-success?trackingId=${verifyRes.data.trackingId}`);
           } else {
             alert("Payment verification failed");
           }
@@ -106,41 +125,67 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="min-h-screen py-10 px-6" style={{ background: COLORS.background }}>
+    <div
+      className="min-h-screen py-10 px-6"
+      style={{ background: COLORS.background }}
+    >
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-        
-        <h1 className="text-3xl font-bold mb-6" style={{ color: COLORS.primary }}>
+        <h1
+          className="text-3xl font-bold mb-6"
+          style={{ color: COLORS.primary }}
+        >
           Payment
         </h1>
 
         {/* Order Summary */}
         <div className="mb-6 border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3" style={{ color: COLORS.text }}>
+          <h2
+            className="text-xl font-semibold mb-3"
+            style={{ color: COLORS.text }}
+          >
             Order Summary
           </h2>
 
           {cartItems.map((item) => (
             <div key={item._id} className="flex justify-between mb-2">
               <span style={{ color: COLORS.text }}>{item.name}</span>
-              <span style={{ color: COLORS.primary }}>₹{item.price * item.quantity}</span>
+              <span style={{ color: COLORS.primary }}>
+                ₹{item.price * item.quantity}
+              </span>
             </div>
           ))}
 
           <div className="flex justify-between mt-3 text-lg font-bold">
             <span>Total</span>
-            <span style={{ color: COLORS.primary }}>₹{cartTotalAmount}</span>
+            <span style={{ color: COLORS.primary }}>₹{amount}</span>
           </div>
         </div>
 
         {/* Shipping Info */}
+
+        {/* Shipping Info */}
         <div className="mb-8 border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-2" style={{ color: COLORS.text }}>
+          <h2
+            className="text-xl font-semibold mb-2"
+            style={{ color: COLORS.text }}
+          >
             Shipping Information
           </h2>
-          <p>{shippingInfo.fullName}</p>
-          <p>{shippingInfo.phone}</p>
-          <p>{shippingInfo.address}</p>
-          <p>{shippingInfo.city} - {shippingInfo.postalCode}</p>
+
+          {shippingInfo ? (
+            <>
+              <p>{shippingInfo.fullName}</p>
+              <p>{shippingInfo.phone}</p>
+              <p>{shippingInfo.address}</p>
+              <p>
+                {shippingInfo.city} - {shippingInfo.postalCode}
+              </p>
+            </>
+          ) : (
+            <p className="text-red-500">
+              No shipping info found. Redirecting...
+            </p>
+          )}
         </div>
 
         {/* Pay Button */}
@@ -149,7 +194,7 @@ export default function PaymentPage() {
           className="w-full py-3 rounded-xl text-lg font-bold text-white shadow-md hover:opacity-90"
           style={{ background: COLORS.primary }}
         >
-          Pay ₹{cartTotalAmount} Securely
+          Pay ₹{amount} Securely
         </button>
       </div>
     </div>

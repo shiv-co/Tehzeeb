@@ -1,16 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Function to get cart from localStorage
 const getInitialCart = () => {
   try {
     const cart = localStorage.getItem("cart");
-    if (cart) {
-      return JSON.parse(cart);
-    }
+    if (cart) return JSON.parse(cart);
   } catch (e) {
-    console.error("Failed to parse cart from localStorage", e);
+    console.error("Failed to parse cart", e);
   }
-  // Return default state if empty or error
+
   return {
     cartItems: [],
     cartTotalQuantity: 0,
@@ -21,22 +18,19 @@ const getInitialCart = () => {
 const initialState = {
   ...getInitialCart(),
   buyNowItem: null,
-  };
+};
 
-// Helper function to update state and localStorage
-const updateStateAndStorage = (state) => {
-  // Recalculate totals
-  let totalQuantity = 0;
-  let totalAmount = 0;
-  state.cartItems.forEach((item) => {
-    totalQuantity += item.quantity;
-    totalAmount += item.quantity * item.price;
-  });
+const updateTotals = (state) => {
+  state.cartTotalQuantity = state.cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
 
-  state.cartTotalQuantity = totalQuantity;
-  state.cartTotalAmount = totalAmount;
+  state.cartTotalAmount = state.cartItems.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
 
-  // Save to localStorage
   localStorage.setItem("cart", JSON.stringify(state));
 };
 
@@ -44,78 +38,79 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    // This is the main fix
     addToCart(state, action) {
-      const product = action.payload; // This is the product from ProductCard
+      const p = action.payload;
+
       const existingItem = state.cartItems.find(
-        (item) => item.id === product._id
+        (item) => item.product === p._id
       );
 
       if (existingItem) {
-        // If item already in cart, increase quantity
         existingItem.quantity += 1;
       } else {
-        // --- THIS IS THE FIX ---
-        // Create a new cartItem object with the correct structure
         state.cartItems.push({
-          id: product._id, // Map _id to id
-          name: product.name,
-          price: product.price,
-          image: product.images[0], // <-- Get the *first image* from the array
+          product: p._id,              // ALWAYS store product ID here
+          name: p.name,
+          image: p.images?.[0] || "",
+          price: p.price,
           quantity: 1,
         });
       }
-      // Recalculate totals and save to localStorage
-      updateStateAndStorage(state);
+
+      updateTotals(state);
     },
 
     removeFromCart(state, action) {
-      const itemIdToRemove = action.payload; // This is item.id
       state.cartItems = state.cartItems.filter(
-        (item) => item.id !== itemIdToRemove
+        (item) => item.product !== action.payload
       );
-      // Recalculate totals and save to localStorage
-      updateStateAndStorage(state);
-    },
- 
-
-
-    setBuyNowItem: (state, action) => {
-      state.buyNowItem = action.payload;
-    },
-
-    clearBuyNowItem: (state) => {
-      state.buyNowItem = null;
-    },
-
-    // You can add these later for quantity buttons
-    decreaseQuantity(state, action) {
-      const itemToDecrease = state.cartItems.find(
-        (item) => item.id === action.payload
-      );
-      if (itemToDecrease.quantity > 1) {
-        itemToDecrease.quantity -= 1;
-      } else {
-        // If quantity is 1, remove it
-        state.cartItems = state.cartItems.filter(
-          (item) => item.id !== action.payload
-        );
-      }
-      updateStateAndStorage(state);
+      updateTotals(state);
     },
 
     increaseQuantity(state, action) {
-      const itemToIncrease = state.cartItems.find(
-        (item) => item.id === action.payload
+      const item = state.cartItems.find(
+        (i) => i.product === action.payload
       );
-      if (itemToIncrease) {
-        itemToIncrease.quantity += 1;
-      }
-      updateStateAndStorage(state);
+      if (item) item.quantity += 1;
+      updateTotals(state);
     },
-    clearCart: (state) => {
+
+    decreaseQuantity(state, action) {
+      const item = state.cartItems.find(
+        (i) => i.product === action.payload
+      );
+
+      if (!item) return;
+
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+      } else {
+        state.cartItems = state.cartItems.filter(
+          (i) => i.product !== action.payload
+        );
+      }
+
+      updateTotals(state);
+    },
+
+    clearCart(state) {
       state.cartItems = [];
-      state.cartTotalAmount = 0;
+      updateTotals(state);
+    },
+
+    setBuyNowItem(state, action) {
+      const p = action.payload;
+      state.buyNowItem = {
+        product: p._id,
+        name: p.name,
+        image: p.images?.[0],
+        price: p.price,
+        quantity: 1,
+      };
+    },
+
+    clearBuyNowItem(state) {
+      state.buyNowItem = null;
     },
   },
 });
@@ -123,11 +118,11 @@ const cartSlice = createSlice({
 export const {
   addToCart,
   removeFromCart,
-  decreaseQuantity,
   increaseQuantity,
+  decreaseQuantity,
   clearCart,
-  setBuyNowItem, 
-  clearBuyNowItem, 
+  setBuyNowItem,
+  clearBuyNowItem,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

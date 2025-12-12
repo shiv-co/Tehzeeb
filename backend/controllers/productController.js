@@ -9,7 +9,7 @@ const getProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
-// @desc    Fetch single product by ID
+// @desc    Fetch single product by ID                              
 // @route   GET /api/products/:id
 // @access  Public
 const getProductById = asyncHandler(async (req, res) => {
