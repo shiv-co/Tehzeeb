@@ -12,9 +12,9 @@ const COLORS = {
   off: "#E7793D",
 };
 
-/* ------------------------------
-   CLOUDINARY THUMBNAIL OPTIMIZER
------------------------------- */
+
+  //  CLOUDINARY THUMBNAIL OPTIMIZER
+
 const getCloudinaryThumbnail = (url) => {
   if (!url || !url.includes("/upload/")) return url;
   const parts = url.split("/upload/");
