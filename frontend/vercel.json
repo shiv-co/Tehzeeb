@@ -4,14 +4,18 @@
 
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://tehzeeb.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://tehzeeb.onrender.com/api/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ],
 
   "headers": [
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/:path*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -27,14 +31,6 @@
           "value": "no-store"
         }
       ]
-    }
-  ],
-
-  "routes": [
-    { "handle": "filesystem" },
-    {
-      "src": "/.*",
-      "dest": "/index.html"
     }
   ]
 }
