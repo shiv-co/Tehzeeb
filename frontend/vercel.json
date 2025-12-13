@@ -1,18 +1,13 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "https://tehzeeb.onrender.com/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ],
-
+  "redirects": [],
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -22,16 +17,6 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    },
-    {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
     }
   ]
 }
-
