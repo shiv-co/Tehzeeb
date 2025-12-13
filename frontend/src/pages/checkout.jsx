@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -33,6 +33,19 @@ export default function CheckoutPage() {
     city: "",
     postalCode: "",
   });
+
+  // 🔒 Redirect to login if user is NOT logged in
+useEffect(() => {
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+  if (!userInfo) {
+    // Save the page user was trying to access
+    sessionStorage.setItem("redirectAfterLogin", "/checkout");
+
+    navigate("/login");
+  }
+}, []);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

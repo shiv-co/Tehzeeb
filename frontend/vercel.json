@@ -6,12 +6,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://tehzeeb.onrender.com/api/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
     }
   ],
+
+  "redirects": [],
 
   "headers": [
     {
@@ -31,6 +29,13 @@
           "value": "no-store"
         }
       ]
+    }
+  ],
+
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
