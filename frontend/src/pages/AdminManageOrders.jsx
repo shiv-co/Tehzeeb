@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { FiEye, FiTrash2, FiCheckCircle } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
+
+const API_BASE = "https://tehzeeb.onrender.com/api";
 const COLORS = {
   primary: "#B3541E",
   secondary: "#D6A74F",
@@ -20,12 +22,14 @@ export default function AdminManageOrders() {
   // ✔ Fetch admin token
   const adminInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  useEffect(() => {
+   useEffect(() => {
+    if (!adminInfo?.token) return;
+
     const fetchOrders = async () => {
       try {
-        const { data } = await axios.get("/api/orders", {
+        const { data } = await axios.get(`${API_BASE}/orders`, {
           headers: {
-            Authorization: `Bearer ${adminInfo?.token}`,
+            Authorization: `Bearer ${adminInfo.token}`,
           },
         });
 
@@ -38,28 +42,28 @@ export default function AdminManageOrders() {
     };
 
     fetchOrders();
-  }, []);
+  }, [adminInfo?.token]); //
 
   // 🗑 Delete Order
-  const deleteOrder = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this order?")) return;
+   const deleteOrder = async (id) => {
+    if (!window.confirm("Delete order permanently?")) return;
 
     try {
-      await axios.delete(`/api/orders/${id}`, {
+      await axios.delete(`${API_BASE}/orders/${id}`, {
         headers: { Authorization: `Bearer ${adminInfo?.token}` },
       });
 
       setOrders((prev) => prev.filter((o) => o._id !== id));
     } catch (error) {
-      console.error("Error deleting:", error);
+      console.error("Delete failed:", error);
     }
   };
 
   // ✔ Mark Delivered
-  const markAsDelivered = async (id) => {
+   const markAsDelivered = async (id) => {
     try {
       await axios.put(
-        `/api/orders/${id}/deliver`,
+        `${API_BASE}/orders/${id}/deliver`,
         {},
         {
           headers: { Authorization: `Bearer ${adminInfo?.token}` },
