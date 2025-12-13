@@ -18,31 +18,12 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
     }
   ],
 
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "missing",
-          "missing": [
-            {
-              "type": "file"
-            }
-          ]
-        }
-      ],
+      "source": "/(.*)",
       "destination": "/index.html",
       "statusCode": 200
     }
