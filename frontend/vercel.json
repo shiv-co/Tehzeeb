@@ -7,6 +7,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://tehzeeb.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
 
@@ -28,13 +32,6 @@
           "value": "no-store"
         }
       ]
-    }
-  ],
-
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ]
 }
