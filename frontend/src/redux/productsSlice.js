@@ -236,7 +236,7 @@ import axios from 'axios';
 
 // 🔹 Base URL — change this to your deployed backend when needed
 // const BASE_URL = "http://localhost:5000/api/products";
-const BASE_URL = "https://tehzeeb.onrender.com/api/products";
+const BASE_URL = "https://tehzeeb-pi47.vercel.app/api/products";
 
 // --- FETCH ALL PRODUCTS ---
 export const fetchProducts = createAsyncThunk(

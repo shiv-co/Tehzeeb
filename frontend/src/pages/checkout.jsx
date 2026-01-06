@@ -88,7 +88,7 @@ useEffect(() => {
       const { data } = await axios.post(
         // "http://localhost:5000/api/orders",
 
-        "https://tehzeeb.onrender.com/api/orders",
+        "https://tehzeeb-pi47.vercel.app/api/orders",
         {
           orderItems: productsToShow.map((item) => ({
             name: item.name || "Unnamed Product",

@@ -32,7 +32,7 @@ useEffect(() => {
 
       const { data } = await axios.get(
         // `http://localhost:5000/api/orders/tracking/${trackingId}`,
-        `https://tehzeeb.onrender.com/api/orders/tracking/${trackingId}`,
+        `https://tehzeeb-pi47.vercel.app/api/orders/tracking/${trackingId}`,
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
 

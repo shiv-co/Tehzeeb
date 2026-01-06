@@ -17,7 +17,7 @@ const getAuthConfig = (getState) => ({
 });
 
 // ---------------- API URL ------------------
-const API_URL = "https://tehzeeb.onrender.com/api";
+const API_URL = "https://tehzeeb-pi47.vercel.app/api/";
 // const API_URL = "http://localhost:5000/api";
 
 // -------------------------------------------------

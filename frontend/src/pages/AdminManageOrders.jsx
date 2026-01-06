@@ -5,7 +5,7 @@ import { FiEye, FiTrash2, FiCheckCircle } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 
-const API_BASE = "https://tehzeeb.onrender.com/api";
+const API_BASE = "https://tehzeeb-pi47.vercel.app/api/";
 const COLORS = {
   primary: "#B3541E",
   secondary: "#D6A74F",
