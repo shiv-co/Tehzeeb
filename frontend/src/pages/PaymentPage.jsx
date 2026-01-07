@@ -14,7 +14,7 @@ const COLORS = {
 };
 
 // Your backend URL
-const API_URL = "https://tehzeeb-pi47.vercel.app/api/";
+const API_URL = "https://tehzeeb-pi47.vercel.app/api";
 // const API_URL = "http://localhost:5000/api";
 // For local dev use:
 export default function PaymentPage() {
