@@ -2,8 +2,12 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { clearCart, clearBuyNowItem } from "../redux/cartSlice.js";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import axios from "axios";
+
+
+
+
 
 const COLORS = {
   primary: "#B3541E",
@@ -22,14 +26,20 @@ export default function PaymentPage() {
   const dispatch = useDispatch();
 
   // Get cart items & total price from Redux
-  const { cartItems, cartTotalAmount, buyNowItem } = useSelector(
+  const { cartItems, buyNowItem } = useSelector(
     (state) => state.cart
   );
 
-  const amount = buyNowItem
-    ? buyNowItem.price * (buyNowItem.quantity || 1)
-    : cartTotalAmount;
+  useEffect(() => {
+  if (!amount) {
+    alert("Invalid payment amount. Redirecting to checkout.");
+    navigate("/checkout");
+  }
+}, [amount]);
 
+  const location = useLocation();
+
+const amount = location.state?.orderPayload?.amount;
   // Get address stored from checkout page
   const shippingInfo = JSON.parse(sessionStorage.getItem("shippingInfo"));
 
