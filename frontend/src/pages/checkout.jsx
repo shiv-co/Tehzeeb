@@ -58,8 +58,8 @@ useEffect(() => {
   const subtotal = buyNowItem
     ? buyNowItem.price * (buyNowItem.quantity || 1)
     : cartTotalAmount;
-
-  const shippingCharge = subtotal >= 5000 ? 0 : 50;
+//  change shipping charges later ******************************************************************
+  const shippingCharge = subtotal >= 5000 ? 0 : 1;
   const amount = subtotal + shippingCharge;
 
   // ---------------------------------------
