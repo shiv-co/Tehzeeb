@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { clearCart, clearBuyNowItem } from "../redux/cartSlice.js";
-
 import { useNavigate,useLocation } from "react-router-dom";
 import axios from "axios";
-
-
-
+import { clearCart, clearBuyNowItem } from "../redux/cartSlice.js";
 
 
 const COLORS = {
@@ -23,6 +19,7 @@ const API_URL = "https://tehzeeb-pi47.vercel.app/api";
 // For local dev use:
 export default function PaymentPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   // Get cart items & total price from Redux
@@ -30,6 +27,9 @@ export default function PaymentPage() {
     (state) => state.cart
   );
 
+const orderPayload = location.state?.orderPayload;
+const amount = orderPayload?.amount;
+  
   useEffect(() => {
   if (!amount) {
     alert("Invalid payment amount. Redirecting to checkout.");
@@ -37,9 +37,7 @@ export default function PaymentPage() {
   }
 }, [amount]);
 
-  const location = useLocation();
 
-const amount = location.state?.orderPayload?.amount;
   // Get address stored from checkout page
   const shippingInfo = JSON.parse(sessionStorage.getItem("shippingInfo"));
 
@@ -210,3 +208,6 @@ const amount = location.state?.orderPayload?.amount;
     </div>
   );
 }
+
+
+
