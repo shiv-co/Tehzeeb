@@ -1,4 +1,3 @@
-
 import Razorpay from "razorpay";
 import express from "express";
 import crypto from "crypto";
@@ -43,6 +42,71 @@ router.post("/create-order", async (req, res) => {
 });
 
 // ---------------- VERIFY SIGNATURE ----------------
+// router.post("/verify", async (req, res) => {
+//   try {
+//     const {
+//       razorpay_payment_id,
+//       razorpay_order_id,
+//       razorpay_signature,
+//       amount,
+//       shippingInfo,
+//       cartItems,
+//       buyNowItem,
+//       userId,
+//     } = req.body;
+
+//     const sign = razorpay_order_id + "|" + razorpay_payment_id;
+
+//     const expectedSign = crypto
+//       .createHmac("sha256", process.env.RAZORPAY_SECRET)
+//       .update(sign)
+//       .digest("hex");
+
+//     if (expectedSign !== razorpay_signature) {
+//       return res.json({ success: false, message: "Invalid signature" });
+//     }
+
+//     const orderItems = (buyNowItem ? [buyNowItem] : cartItems).map((item) => ({
+//       name: item.name,
+//       qty: item.quantity || 1,
+//       image: item.images?.[0],
+//       price: item.price,
+//       product: item._id,
+//     }));
+
+//     const order = await Order.create({
+//       user: userId || null,
+//       orderItems,
+//       shippingAddress: {
+//         address: shippingInfo.address,
+//         city: shippingInfo.city,
+//         postalCode: shippingInfo.postalCode,
+//         country: "India",
+//       },
+//       paymentMethod: "Razorpay",
+//       paymentResult: {
+//         id: razorpay_payment_id,
+//         status: "Paid",
+//         update_time: new Date(),
+//         email_address: shippingInfo.email,
+//       },
+//       totalPrice: amount,
+//       isPaid: true,
+//       paidAt: new Date(),
+//     });
+
+//     res.json({
+//       success: true,
+//       orderId: order._id,
+//       trackingId: order.trackingId,
+//     });
+
+//   } catch (error) {
+//     // console.error("Payment verification error:", error);
+//     res.status(500).json({ success: false, message: "Verification error" });
+//   }
+// });
+
 router.post("/verify", async (req, res) => {
   try {
     const {
@@ -56,6 +120,7 @@ router.post("/verify", async (req, res) => {
       userId,
     } = req.body;
 
+    // 1️⃣ Verify signature
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSign = crypto
@@ -64,18 +129,23 @@ router.post("/verify", async (req, res) => {
       .digest("hex");
 
     if (expectedSign !== razorpay_signature) {
-      return res.json({ success: false, message: "Invalid signature" });
+      return res.status(400).json({ success: false, message: "Invalid signature" });
     }
 
-    const orderItems = (buyNowItem ? [buyNowItem] : cartItems).map((item) => ({
+    // 2️⃣ Normalize products (CRITICAL FIX)
+    const products = buyNowItem ? [buyNowItem] : cartItems;
+
+    const orderItems = products.map((item) => ({
       name: item.name,
       qty: item.quantity || 1,
-      image: item.images?.[0],
+      image: item.image || item.images?.[0] || "",
       price: item.price,
-      product: item._id,
+      product: item.product || item._id || item.id,
     }));
 
+    // 3️⃣ Create order (trackingId FIX)
     const order = await Order.create({
+      trackingId: "TC" + Date.now(),
       user: userId || null,
       orderItems,
       shippingAddress: {
@@ -83,6 +153,9 @@ router.post("/verify", async (req, res) => {
         city: shippingInfo.city,
         postalCode: shippingInfo.postalCode,
         country: "India",
+        phone: shippingInfo.phone,
+        fullName: shippingInfo.fullName,
+        email: shippingInfo.email,
       },
       paymentMethod: "Razorpay",
       paymentResult: {
@@ -96,6 +169,7 @@ router.post("/verify", async (req, res) => {
       paidAt: new Date(),
     });
 
+    // 4️⃣ Respond
     res.json({
       success: true,
       orderId: order._id,
@@ -103,8 +177,11 @@ router.post("/verify", async (req, res) => {
     });
 
   } catch (error) {
-    // console.error("Payment verification error:", error);
-    res.status(500).json({ success: false, message: "Verification error" });
+    console.error("🔥 Razorpay verify failed:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
